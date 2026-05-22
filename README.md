@@ -5,6 +5,27 @@ Two complementary Cursor / Claude **Skills** that wrap the
 server.  Both skills are **read-only documentation packages**; the actual
 tool calls are made by the MCP server.
 
+## Languages / 语言
+
+This repository ships each skill in two parallel language variants. They
+share the same MCP server, the same activation handshake, and the same
+behavior — only the prose language and frontmatter `language_directive`
+differ.
+
+| Skill (Chinese, primary) | Skill (English mirror) | When to use |
+| ------------------------ | ---------------------- | ----------- |
+| `schwab-marketdata-ops` | [`schwab-marketdata-ops-en`](schwab-marketdata-ops-en/SKILL.md) | Single tool calls, OAuth / 401 / 429 troubleshooting, exact tool schema lookup. |
+| `schwab-marketdata-workflows` | [`schwab-marketdata-workflows-en`](schwab-marketdata-workflows-en/SKILL.md) | Multi-step playbooks that update markdown in `kevinkda/stock-personal` (private). |
+
+> **English mirror coverage**: the two `SKILL.md` files, all 7 Quick
+> Start steps, all 8 Tools references, all 4 Concepts files, and all 4
+> Workflow playbooks are **fully translated**. The remaining files
+> (OAuth × 6, Integration × 4, Operations × 3, Troubleshooting × 17,
+> top-level × 5 = 35 files) are **structural placeholders** — each one
+> carries the H1 title, an English abstract, and a link back to the
+> Chinese source for full content. Contributions to upgrade any
+> placeholder to a complete translation are welcome.
+
 | Skill                           | When to use                                                                          |
 | ------------------------------- | ------------------------------------------------------------------------------------ |
 | `schwab-marketdata-ops`         | Single tool calls, OAuth / 401 / 429 troubleshooting, exact tool schema lookup.      |
@@ -35,11 +56,18 @@ The exact mechanism depends on your client version.  Typical layouts:
 
 1. **Cursor** discovers user-level skills by scanning `~/.cursor/skills/`
    and any directory the user adds via Settings → Skills.  Symlink (or
-   copy) the two folders inside this repo:
+   copy) the folders you want — pick the Chinese primary, the English
+   mirror, or both (Cursor accepts them as distinct skills because the
+   directory names differ):
 
    ```bash
-   ln -s "$(pwd)/schwab-marketdata-ops"       ~/.cursor/skills/schwab-marketdata-ops
-   ln -s "$(pwd)/schwab-marketdata-workflows" ~/.cursor/skills/schwab-marketdata-workflows
+   # Chinese primary (default for this repo)
+   ln -s "$(pwd)/schwab-marketdata-ops"          ~/.cursor/skills/schwab-marketdata-ops
+   ln -s "$(pwd)/schwab-marketdata-workflows"    ~/.cursor/skills/schwab-marketdata-workflows
+
+   # English mirror (optional; install in addition or instead)
+   ln -s "$(pwd)/schwab-marketdata-ops-en"       ~/.cursor/skills/schwab-marketdata-ops-en
+   ln -s "$(pwd)/schwab-marketdata-workflows-en" ~/.cursor/skills/schwab-marketdata-workflows-en
    ```
 
 2. **Claude Code** picks up `~/.claude/skills/<name>/SKILL.md`.  The same
