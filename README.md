@@ -52,26 +52,56 @@ The exact mechanism depends on your client version.  Typical layouts:
 
 ## Compatibility matrix
 
-不同 agent 客户端对 skill frontmatter 字段的支持不一致。下表是经过验证的兼容情况：
+不同 agent 客户端对 skill frontmatter 字段的支持情况。下表是经过验证
+的兼容情况：**5 客户端 × 8 字段**。
 
-| 客户端 | 已测版本 | `compatible_mcp_version` | `required_workspace` | `language_directive` | 备注 |
-| ------ | -------- | ------------------------ | -------------------- | -------------------- | ---- |
-| **Cursor IDE** | ≥ 0.45 | 支持（在 SKILL.md body 显式调用 `get_server_info` 校验） | 支持（agent 在 pre-flight 检查 cwd） | 支持（作为 system prompt 注入） | 推荐通过 `~/.cursor/skills/` 软链方式注册 |
-| **Claude Code** | ≥ 1.0 | 支持（同上，body 显式校验） | 支持（agent 在 pre-flight 检查 cwd） | 支持 | 推荐通过 `~/.claude/skills/` 软链方式注册 |
-| **Kiro CLI** | ≥ 0.1 | 支持（同上） | 部分支持（取决于 host） | 支持 | 仅 skills-compatible 模式 |
-| **Cline** | ≥ 3.x | 支持（同上） | 部分支持 | 支持 | 通过 MCP 协议注册 |
-| 其他 skills-compatible agents | — | 视实现而定 | 视实现而定 | 视实现而定 | 凡是认 `name` + `description` frontmatter 的都可用，附加字段会被忽略但不报错 |
+> **关键约定**：所有非标准 frontmatter 字段**只是文档化约束**——真正
+> 的执行靠 `SKILL.md` body 的运行时检查（`get_server_info` 版本握手 +
+> `cwd` 校验 + 中文回复指令 + activation handshake）。即便客户端不识别
+> frontmatter 字段本身，skill 行为仍正确。
 
-**关键约定**：所有非标准 frontmatter 字段（`compatible_mcp_version`, `required_workspace`, `language_directive`）**只是文档化约束**——真正的执行靠 SKILL.md body 的运行时检查（`get_server_info` 版本握手 + `cwd` 校验 + 中文回复指令）。这意味着即便客户端不识别 frontmatter 字段本身，skill 行为仍正确。
+图例：✅ 完整支持 / ⚠️ 部分支持或视实现而定 / ❌ 不支持
+
+| 客户端 | 已测版本 | `compatible_mcp_version` | `required_workspace` | `language_directive` | `auto_activate` | `activation_handshake` | `compatibility` | `dependencies` | `governance` |
+| ------ | -------- | ------------------------ | -------------------- | -------------------- | --------------- | ---------------------- | --------------- | -------------- | ------------ |
+| **Cursor IDE** | ≥ 0.45 | ✅ body 显式校验 | ✅ agent pre-flight 检查 cwd | ✅ 作为 system prompt 注入 | ⚠️ 字段被忽略，body 行为不变 | ✅ body 显式调用 2 个 tool | ✅ 文档化 | ⚠️ 文档化 + body 用 `get_server_info` 校验 | ✅ 文档化 |
+| **Claude Code** | ≥ 1.0 | ✅ 同上 | ✅ 同上 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 |
+| **Kiro CLI** | ≥ 0.1 | ✅ body 显式校验 | ⚠️ 视 host 决定 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
+| **Cline** | ≥ 3.x | ✅ body 显式校验（通过 MCP 协议握手） | ⚠️ 部分支持 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
+| **Roo Code** | latest | ✅ body 显式校验 | ⚠️ 部分支持 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
+| 其他 skills-compatible agents | — | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 |
+
+### 字段语义速查
+
+| 字段 | 说明 |
+| ---- | ---- |
+| `compatible_mcp_version` | semver-like 范围，约束 skill 适配的 server 版本（`>=0.1,<0.2`）；激活时 agent 调 `get_server_info` 校验 |
+| `required_workspace` | 仅 `schwab-marketdata-workflows` 有；约束写入数据所在的 cwd 子树（`/opt/workspace/code/kevinkda/stock-personal`） |
+| `language_directive` | 强制 agent 用某种语言回复（本项目要求 Simplified Chinese） |
+| `auto_activate` | 是否自动激活；本 skill 设为 `false`（agent 应根据用户意图按需激活） |
+| `activation_handshake` | 描述激活时必经的 tool 调用顺序（`get_server_info -> health_check`） |
+| `compatibility` | 列出 skill 已验证兼容的客户端（自由格式字符串） |
+| `dependencies` | 声明 skill 依赖的 MCP server / 外部 runtime（`uv` / `python>=3.10` 等） |
+| `governance` | 声明数据分类、写入约束、Git Safety Protocol（如禁止 force-push 主分支） |
+
+### 注册路径
+
+| 客户端 | 推荐注册路径 |
+| ------ | ------------ |
+| Cursor | `~/.cursor/skills/<name>` 软链 |
+| Claude Code | `~/.claude/skills/<name>` 软链 |
+| Kiro CLI | `~/.kiro/skills/<name>`（视版本而定） |
+| Cline | 通过 MCP 协议向 IDE 注册（IDE 设置内） |
+| Roo Code | 通过 MCP 协议（IDE 设置内） |
 
 ## Authoring conventions
 
-* **Both skills respond in 简体中文** — see the `language_directive`
+- **Both skills respond in 简体中文** — see the `language_directive`
   field in each `SKILL.md` frontmatter.
-* Tool inputs use the schwab-py **enum names** (e.g. `"VOLUME"`,
+- Tool inputs use the schwab-py **enum names** (e.g. `"VOLUME"`,
   `"NASDAQ"`), not the wire values (`"$DJI"`, `"day"`).  The MCP server
   performs the translation.
-* Every workflow playbook **must** verify
+- Every workflow playbook **must** verify
   `gh repo view kevinkda/stock-personal --json isPrivate` before writing.
   Schwab Market Data is non-redistributable; private repos are a
   contractual requirement.
