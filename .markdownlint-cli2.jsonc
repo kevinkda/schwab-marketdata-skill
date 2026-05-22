@@ -36,7 +36,15 @@
 
     // Use dashes for unordered lists everywhere (matches the dominant style
     // already in this repo); markdownlint-cli2 --fix will normalize.
-    "MD004": { "style": "dash" }
+    "MD004": { "style": "dash" },
+
+    // Disable strict table-pipe alignment (MD060). Many existing tables
+    // have variable-width cells (Chinese + English mix, long inline code,
+    // multi-language descriptions) where forcing pipe alignment hurts
+    // readability without improving structure. The English i18n mirror
+    // inherits the same shapes from the Chinese source. Keep this off
+    // until we have a tooling solution that handles CJK widths correctly.
+    "MD060": false
   },
   "globs": ["**/*.md"],
   "ignores": [
