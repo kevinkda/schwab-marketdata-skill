@@ -33,8 +33,8 @@ autogenerate one from elsewhere.
    per snapshot** to stay under the per-call budget.
 5. Build a markdown table sorted by `netPercentChange` desc.
 6. Write to:
-   * `docs/watchlist.md` — replace the "Latest snapshot" section.
-   * `docs/watchlist-history/YYYY-MM-DD.md` — full snapshot copy with
+   - `docs/watchlist.md` — replace the "Latest snapshot" section.
+   - `docs/watchlist-history/YYYY-MM-DD.md` — full snapshot copy with
      timestamp.
 
 ## Write & commit
@@ -69,8 +69,8 @@ git reset --soft HEAD~1   # 撤销 commit 但保留 working tree 变更
 
 ## Sanity assertions before commit
 
-* `git diff --cached --stat` should show ≤ 2 files changed.
-* No file outside `docs/` is staged.
-* `gitleaks protect --staged` passes (pre-commit hook will catch this
+- `git diff --cached --stat` should show ≤ 2 files changed.
+- No file outside `docs/` is staged.
+- `gitleaks protect --staged` passes (pre-commit hook will catch this
   too, but assert explicitly so a misconfigured repo can't sneak
   through).

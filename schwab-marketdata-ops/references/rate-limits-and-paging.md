@@ -12,11 +12,11 @@ suggests **~120 req/min/user** for Market Data Production.  The
 A **token-bucket** with sliding-window expiry sits in front of every
 schwab-py call:
 
-* Bucket capacity = `SCHWAB_RATE_LIMIT_PER_MIN` (default 120).
-* Each request consumes 1 slot; the slot auto-recovers `60 s` later.
-* When fewer than `20` slots remain, a structured `WARNING` line is
+- Bucket capacity = `SCHWAB_RATE_LIMIT_PER_MIN` (default 120).
+- Each request consumes 1 slot; the slot auto-recovers `60 s` later.
+- When fewer than `20` slots remain, a structured `WARNING` line is
   written to stderr (`{"event":"rate_limit_warning","remaining":N}`).
-* When `0` slots remain, the next call **immediately** raises
+- When `0` slots remain, the next call **immediately** raises
   `SchwabRateLimitError` instead of blocking; the agent decides how to
   pace itself.
 
@@ -86,4 +86,3 @@ Schwab 返回 429 但响应里没有 `Retry-After` header（罕见）。
 
 - **服务端兜底**：schwab-py 内部默认 **指数退避**（1s / 2s）兜底，agent 通常无需感知。
 - **agent 端处置**：若 `SCHWAB_MAX_RETRIES` 跑完仍失败 → 当作普通 `SchwabRateLimitError` 处理；等 30-60s 后再试。
-

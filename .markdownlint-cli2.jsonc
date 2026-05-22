@@ -1,0 +1,48 @@
+// Project-level markdownlint-cli2 config for schwab-marketdata-skill
+// Goal: enforce a 120-char line width (modern terminals + GitHub side-by-side
+// diff fit), allow Chinese punctuation in headings, and tolerate the YAML
+// front matter that all SKILL.md files start with.
+{
+  "config": {
+    "default": true,
+
+    // Line length: 120 (markdown industry standard). Tables and code blocks
+    // are exempt because wrapping them would corrupt structure / shell
+    // examples.
+    "MD013": {
+      "line_length": 120,
+      "tables": false,
+      "code_blocks": false,
+      "headings": false
+    },
+
+    // Allow duplicate headings under DIFFERENT parents (e.g. "### Symptom"
+    // appearing once per troubleshooting-* file is fine; only flag when
+    // duplicates share the same parent heading).
+    "MD024": { "siblings_only": true },
+
+    // YAML front matter (---\nname: ...\n---) means line 1 is not an H1.
+    // SKILL.md files mandate front matter, so disable the "first line must
+    // be a heading" check.
+    "MD041": false,
+
+    // Allow common safe inline HTML in markdown.
+    "MD033": {
+      "allowed_elements": ["br", "details", "summary", "kbd", "sub", "sup"]
+    },
+
+    // Allow trailing punctuation in Chinese headings (？！。：).
+    "MD026": { "punctuation": ".,;:!" },
+
+    // Use dashes for unordered lists everywhere (matches the dominant style
+    // already in this repo); markdownlint-cli2 --fix will normalize.
+    "MD004": { "style": "dash" }
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "node_modules/**",
+    ".git/**",
+    "LICENSE",
+    "LICENSE.md"
+  ]
+}

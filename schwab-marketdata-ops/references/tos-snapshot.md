@@ -6,13 +6,15 @@
 > this skill assume no responsibility for your interpretation.
 >
 > Sources (publicly accessible, no login required):
-> * Schwab Online Services Agreement — <https://www.schwab.com/legal/terms>
-> * Charles Schwab International Terms of Use — <https://international.schwab.com/terms-of-use>
-> * Charles Schwab Third Party Terms — <https://www.schwab.com/legal/third-party-terms>
+>
+> - Schwab Online Services Agreement — <https://www.schwab.com/legal/terms>
+> - Charles Schwab International Terms of Use — <https://international.schwab.com/terms-of-use>
+> - Charles Schwab Third Party Terms — <https://www.schwab.com/legal/third-party-terms>
 >
 > Additional gated source (requires Schwab Developer Portal login;
 > **not** mirrored here):
-> * <https://developer.schwab.com/legal>
+>
+> - <https://developer.schwab.com/legal>
 
 ## Why this snapshot exists
 
@@ -56,9 +58,9 @@ any.
 
 ## What we deliberately do NOT do
 
-* We do **not** quote any clause numbers / section IDs.  Schwab does
+- We do **not** quote any clause numbers / section IDs.  Schwab does
   not publish a stable numbering scheme; inventing one would be both
   inaccurate and easy to misread as a citation.
-* We do **not** mirror text behind a login wall (Developer Portal).
-* We do **not** offer a legal opinion on whether your specific use is
+- We do **not** mirror text behind a login wall (Developer Portal).
+- We do **not** offer a legal opinion on whether your specific use is
   compliant.  That is between you, your attorney, and Schwab.

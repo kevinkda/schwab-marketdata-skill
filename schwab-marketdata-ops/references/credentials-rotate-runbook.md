@@ -1,10 +1,11 @@
 # Credentials rotation runbook
 
 > **Trigger** — any of:
-> * `gitleaks` / `detect-secrets` flagged a real-looking secret in a commit.
-> * You realise `.env` was accidentally pushed to a public location.
-> * Schwab Developer Portal flags suspicious activity.
-> * A teammate or laptop loss raises any doubt.
+>
+> - `gitleaks` / `detect-secrets` flagged a real-looking secret in a commit.
+> - You realise `.env` was accidentally pushed to a public location.
+> - Schwab Developer Portal flags suspicious activity.
+> - A teammate or laptop loss raises any doubt.
 
 This runbook prioritises the **legally meaningful action first** — i.e.
 rotating the secret on Schwab's side, which is what actually severs
@@ -12,13 +13,13 @@ attacker access.  Repository hygiene comes second.
 
 ## ⚠️ Git Safety Protocol — non-negotiable rules
 
-* **NEVER** force-push to `main` / `master` / `mainline` of a public or
+- **NEVER** force-push to `main` / `master` / `mainline` of a public or
   shared repository.
-* **NEVER** rewrite history that has been pushed without first creating
+- **NEVER** rewrite history that has been pushed without first creating
   a security branch and going through normal PR review (even on a
   personal project — it preserves an audit trail).
-* **NEVER** skip pre-commit hooks (`--no-verify`).
-* **NEVER** trust GitHub's "remove" button to scrub a leaked commit;
+- **NEVER** skip pre-commit hooks (`--no-verify`).
+- **NEVER** trust GitHub's "remove" button to scrub a leaked commit;
   GitHub keeps dangling commit SHAs accessible for **months**.
 
 These rules are inherited from the user's `.cursor/rules` plus the
@@ -75,10 +76,12 @@ git push --force-with-lease origin feature-branch
 1. **Step 1 (rotate at Schwab) is what actually stopped the attacker.**
    The remaining steps preserve repo integrity but don't add security.
 2. Create a security branch:
+
    ```bash
    git switch -c security/rotate-credentials-$(date +%Y%m%d)
    git filter-repo --invert-paths --path .env
    ```
+
 3. Open a PR from `security/rotate-credentials-YYYYMMDD` to `main`.
    Even if you are the only reviewer, **review and merge it through
    the normal flow** — this preserves the audit trail.
@@ -87,10 +90,10 @@ git push --force-with-lease origin feature-branch
    the appearance of the issue, not its existence.
 5. If you absolutely must rewrite `main` history (rare), the user must
    explicitly ack each of the following:
-   * "I understand GitHub keeps dangling commit SHAs for months."
-   * "I understand any cached fork or CI provider may still hold the
+   - "I understand GitHub keeps dangling commit SHAs for months."
+   - "I understand any cached fork or CI provider may still hold the
      secret."
-   * "I have already rotated the secret in Schwab Developer Portal."
+   - "I have already rotated the secret in Schwab Developer Portal."
    Without all three acknowledgements, **stop** and tell the user to
    wait for a normal PR cycle.
 

@@ -16,9 +16,9 @@ does NOT expose).
 
 ## Inputs
 
-* `symbol` — single ticker; reject anything that does not match
+- `symbol` — single ticker; reject anything that does not match
   `^[A-Z][A-Z0-9.\-/]{0,9}$` (no indices, no OSI strings).
-* `from_date` / `to_date` — optional TZ-aware datetimes for the chain
+- `from_date` / `to_date` — optional TZ-aware datetimes for the chain
   window.  Default: today → today + 60 days.
 
 ## Pre-flight
@@ -33,6 +33,7 @@ Same 5-step checklist as `voo-qqq-tracker-update.md`.
    - the **nearest monthly** (3rd Friday of the next month)
    - the **next quarterly** (Mar/Jun/Sep/Dec)
 4. For each picked expiry, call `get_option_chain` with:
+
    ```text
    contract_type="ALL"
    strike_count=20
@@ -42,6 +43,7 @@ Same 5-step checklist as `voo-qqq-tracker-update.md`.
    from_date=<picked_expiry>
    to_date=<picked_expiry>
    ```
+
    This produces ~20 strikes around the money for that expiry, both
    calls and puts.
 5. Build a markdown report in
@@ -82,10 +84,10 @@ git reset --soft HEAD~1   # 撤销 commit 但保留 working tree 变更
 
 ## Cautions
 
-* The Greeks (`delta`, `gamma`, `theta`, `vega`) returned by Schwab are
+- The Greeks (`delta`, `gamma`, `theta`, `vega`) returned by Schwab are
   computed against their pricing model.  **Document the exact moment**
   (UTC + market session) you took the snapshot — values shift
   meaningfully over a single trading hour.
-* Chain data is non-redistributable per Schwab ToS.  If the user asks
+- Chain data is non-redistributable per Schwab ToS.  If the user asks
   to share this note, refuse and remind them per
   `references/tos-snapshot.md`.

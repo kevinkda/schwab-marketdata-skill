@@ -47,15 +47,15 @@ description: |
 
 ## 通用约束（所有 playbook 必须遵守）
 
-* **commit 前缀**：所有由本 skill 触发的 commit message 必须以
+- **commit 前缀**：所有由本 skill 触发的 commit message 必须以
   `data(schwab):` 开头，便于事后审计。
-* **不直接 commit 到 main**：在当前 feature/data 分支上 commit；如果当前
+- **不直接 commit 到 main**：在当前 feature/data 分支上 commit；如果当前
   cwd 在 main 分支，先 `git switch -c data/schwab-YYYYMMDD`。
-* **永不 push 到 public**：`gh repo view --json isPrivate` 校验失败即停。
-* **永不 push --force**：尤其不允许对 main / mainline 强推。
-* **数据保鲜度**：当 `health_check()` 返回 `token_state != "valid"`
+- **永不 push 到 public**：`gh repo view --json isPrivate` 校验失败即停。
+- **永不 push --force**：尤其不允许对 main / mainline 强推。
+- **数据保鲜度**：当 `health_check()` 返回 `token_state != "valid"`
   或 `token_expires_in_days < 0.5`，停下要求用户先 reauthorize，再继续。
-* **请求量预算**：单次 playbook 调用 ≤ 30 个 tool call，超过先告诉用户
+- **请求量预算**：单次 playbook 调用 ≤ 30 个 tool call，超过先告诉用户
   分批；这避免 Schwab 限流或 token-bucket 撑爆。
 
 ## Idempotency
