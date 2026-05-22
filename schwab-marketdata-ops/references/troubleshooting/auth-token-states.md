@@ -89,7 +89,7 @@ uv run python -m schwab_marketdata_mcp.health   # exit 0
 
 ## 状态转换图
 
-```
+```text
        initial
          │ install server
          ▼

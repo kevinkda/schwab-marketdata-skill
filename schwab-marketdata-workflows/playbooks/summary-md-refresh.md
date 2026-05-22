@@ -85,7 +85,8 @@ git commit -m "data(schwab): summary refresh $(date -u +%Y-%m-%dT%H:%MZ)"
 - [ ] **仅 docs/ 下文件被修改**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都以 `docs/` 开头（应仅 `docs/summary.md`）
 - [ ] **health_check 仍 valid**：`uv run python -m schwab_marketdata_mcp.health` exit code = 0，输出 `token_state == "valid"`
 - [ ] **gitleaks pass**：`pre-commit run gitleaks --files docs/summary.md` exit code = 0
-- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/summary.md` 看到新的 `## Latest snapshot` 段含 timestamp / market session / VOO|QQQ|SPY|IWM 表格；用户手写 narrative 段未被覆盖
+- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/summary.md` 看到新的 `## Latest snapshot` 段含
+      timestamp / market session / VOO|QQQ|SPY|IWM 表格；用户手写 narrative 段未被覆盖
 
 ## Rollback
 

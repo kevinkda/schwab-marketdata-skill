@@ -16,7 +16,7 @@
 `refresh_token` 是 **rotate-on-use**：每次刷新都签发新的、旧的立即失效。
 所以：
 
-```
+```text
 机器 A：access_token AT₁ + refresh_token RT₁
         ↓ 80 分钟后自动 refresh
        AT₂ + RT₂（旧 RT₁ 立即失效）
@@ -62,7 +62,7 @@ RT，可以并存。但是：
 
 ### 目录结构
 
-```
+```text
 ~/.local/state/
 ├── schwab-marketdata-mcp/             # 默认账户 A
 │   └── token.json
@@ -95,7 +95,7 @@ uv run python -m schwab_marketdata_mcp.auth login_flow \
 每个账户**Developer Portal app 不同** → App Key / Secret / Callback URL
 不同。建议**每个账户一个独立的 schwab-marketdata-mcp checkout**：
 
-```
+```text
 ~/code/kevinkda/schwab-marketdata-mcp-A/    # checkout 1，.env A
 ~/code/kevinkda/schwab-marketdata-mcp-B/    # checkout 2，.env B
 ```

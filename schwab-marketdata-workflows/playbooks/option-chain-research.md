@@ -68,10 +68,15 @@ git commit -m "data(schwab): ${SYMBOL} option chain research $(date -u +%Y-%m-%d
 完成后逐项验证：
 
 - [ ] **commit 已创建**：`git -C ${target_repo} log -1 --format="%H %s"` 输出最新 commit hash + `data(schwab):` 前缀的 message
-- [ ] **仅 docs/ 下文件被修改**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都以 `docs/option-research/` 开头（应仅 `docs/option-research/${SYMBOL}-<date>.md`）
+- [ ] **仅 docs/ 下文件被修改**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都以
+      `docs/option-research/` 开头（应仅 `docs/option-research/${SYMBOL}-<date>.md`）
 - [ ] **health_check 仍 valid**：`uv run python -m schwab_marketdata_mcp.health` exit code = 0，输出 `token_state == "valid"`
-- [ ] **gitleaks pass**：`pre-commit run gitleaks --files docs/option-research/${SYMBOL}-$(date -u +%Y-%m-%d).md` exit code = 0
-- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/option-research/${SYMBOL}-$(date -u +%Y-%m-%d).md` 看到 underlying snapshot + 至少 1 个 expiry section（含 calls/puts strike 表格 + UTC timestamp）
+- [ ] **gitleaks pass**：
+      `pre-commit run gitleaks --files docs/option-research/${SYMBOL}-$(date -u +%Y-%m-%d).md`
+      exit code = 0
+- [ ] **文件 head 抽样校验**：
+      `head -50 ${target_repo}/docs/option-research/${SYMBOL}-$(date -u +%Y-%m-%d).md`
+      看到 underlying snapshot + 至少 1 个 expiry section（含 calls/puts strike 表格 + UTC timestamp）
 
 ## Rollback
 

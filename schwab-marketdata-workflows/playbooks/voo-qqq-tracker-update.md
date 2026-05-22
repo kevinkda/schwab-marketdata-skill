@@ -58,7 +58,8 @@ git commit -m "data(schwab): VOO/QQQ tracker $(date -u +%Y-%m-%dT%H:%MZ)"
 - [ ] **仅 docs/ 下文件被修改**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都以 `docs/` 开头
 - [ ] **health_check 仍 valid**：`uv run python -m schwab_marketdata_mcp.health` exit code = 0，输出 `token_state == "valid"`
 - [ ] **gitleaks pass**：`pre-commit run gitleaks --files <changed_files>` exit code = 0（无密钥泄露）
-- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/voo-qqq-tracker.md` 看到新增 section 含 timestamp + market session + VOO/QQQ snapshot 表格
+- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/voo-qqq-tracker.md` 看到新增 section 含
+      timestamp + market session + VOO/QQQ snapshot 表格
 
 ## Rollback
 

@@ -95,7 +95,9 @@ get_server_info()
 2. `get_option_chain(symbol, contract_type=…, strike_count=…, strike_range=…)` — 按 ATM/OTM/ITM 拉具体合约
 3. 多步骤研究型工作流 → 转用 `schwab-marketdata-workflows` skill 的 `option-chain-research.md` playbook
 
-→ Schema 见 [`references/tools/tool-reference-options.md`](references/tools/tool-reference-options.md)；Greeks 时效性见 playbook Cautions 段与 [`references/concepts/osi-option-symbol.md`](references/concepts/osi-option-symbol.md)。
+→ Schema 见 [`references/tools/tool-reference-options.md`](references/tools/tool-reference-options.md)；
+Greeks 时效性见 playbook Cautions 段与
+[`references/concepts/osi-option-symbol.md`](references/concepts/osi-option-symbol.md)。
 
 ### "Token 过期了怎么办"
 
@@ -109,7 +111,12 @@ get_server_info()
 3. 重新 health_check() 确认 token_state == "valid"
 ```
 
-→ 完整对照表与逐步处置见 [`references/troubleshooting/auth-overview.md`](references/troubleshooting/auth-overview.md)；OAuth 流程详解见 [`references/oauth/oauth-overview.md`](references/oauth/oauth-overview.md)；token 生命周期见 [`references/oauth/oauth-token-lifecycle.md`](references/oauth/oauth-token-lifecycle.md)。
+→ 完整对照表与逐步处置见
+[`references/troubleshooting/auth-overview.md`](references/troubleshooting/auth-overview.md)；
+OAuth 流程详解见
+[`references/oauth/oauth-overview.md`](references/oauth/oauth-overview.md)；
+token 生命周期见
+[`references/oauth/oauth-token-lifecycle.md`](references/oauth/oauth-token-lifecycle.md)。
 
 ### "限流被拒了怎么办"
 
@@ -119,7 +126,10 @@ get_server_info()
 | stderr 出现 `{"event":"rate_limit_warning","remaining":<20}` | 将批量请求改用 `get_quotes`（一次 50）；或降低 `SCHWAB_RATE_LIMIT_PER_MIN` |
 | 0 slots 立即 raise | agent 端实施 retry-with-backoff（schwab-py 内部已重试 `SCHWAB_MAX_RETRIES` 次） |
 
-→ token-bucket 行为与排查见 [`references/operations/rate-limit-token-bucket.md`](references/operations/rate-limit-token-bucket.md)；4 种限流症状分流见 [`references/troubleshooting/rate-limit-overview.md`](references/troubleshooting/rate-limit-overview.md)。
+→ token-bucket 行为与排查见
+[`references/operations/rate-limit-token-bucket.md`](references/operations/rate-limit-token-bucket.md)；
+4 种限流症状分流见
+[`references/troubleshooting/rate-limit-overview.md`](references/troubleshooting/rate-limit-overview.md)。
 
 ### "我想看 server 健康"
 
@@ -142,7 +152,10 @@ get_price_history(symbol, period_type, period?, frequency_type, frequency?, ...)
 **受限组合**，非法组合服务端静默 400。MCP server 在 Pydantic 层提前
 拦截。
 
-→ Schema + 合法组合表见 [`references/tools/tool-reference-price-history.md`](references/tools/tool-reference-price-history.md)；笛卡尔积错误处置见 [`references/troubleshooting/validation-pricehistory-cartesian.md`](references/troubleshooting/validation-pricehistory-cartesian.md)。
+→ Schema + 合法组合表见
+[`references/tools/tool-reference-price-history.md`](references/tools/tool-reference-price-history.md)；
+笛卡尔积错误处置见
+[`references/troubleshooting/validation-pricehistory-cartesian.md`](references/troubleshooting/validation-pricehistory-cartesian.md)。
 
 ### "我要查 instrument 元数据 / 公司基本面"
 

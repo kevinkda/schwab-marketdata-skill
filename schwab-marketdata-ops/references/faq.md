@@ -191,8 +191,7 @@ ops 是**单 tool call** + troubleshooting；workflows 是**多步 playbook**
 ### 30. 客户端兼容性？
 
 Cursor / Claude Code / Kiro CLI / Cline / Roo Code 等 skills-compatible
-agents。详见 README 与
-[`compatibility-matrix.md`](#) 与 ops/SKILL.md 的 Compatibility 表格。
+agents。详见 README 与 ops/SKILL.md 的 Compatibility 表格。
 
 ## 故障与恢复
 

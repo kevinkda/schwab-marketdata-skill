@@ -56,7 +56,8 @@ git commit -m "data(schwab): watchlist snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
 - [ ] **仅 docs/ 下文件被修改**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都以 `docs/` 开头（含 `docs/watchlist.md` 与 `docs/watchlist-history/<date>.md`）
 - [ ] **health_check 仍 valid**：`uv run python -m schwab_marketdata_mcp.health` exit code = 0，输出 `token_state == "valid"`
 - [ ] **gitleaks pass**：`pre-commit run gitleaks --files <changed_files>` exit code = 0
-- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/watchlist.md` 看到新的 "Latest snapshot" 段；`head -50 ${target_repo}/docs/watchlist-history/$(date -u +%Y-%m-%d).md` 看到完整月度 snapshot
+- [ ] **文件 head 抽样校验**：`head -50 ${target_repo}/docs/watchlist.md` 看到新的 "Latest snapshot" 段；
+      `head -50 ${target_repo}/docs/watchlist-history/$(date -u +%Y-%m-%d).md` 看到完整月度 snapshot
 
 ## Rollback
 

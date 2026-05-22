@@ -22,7 +22,8 @@ MCP server 把所有 Schwab 失败规范化为结构化 dict（`error` 字段非
   - 5xx：Schwab 服务端故障 / 网关超时；schwab-py 已按 `SCHWAB_MAX_RETRIES`（默认 2）次指数退避重试仍失败。
   - 非 401/429 的 4xx：通常是 Pydantic 没拦下来的边角输入问题（如某个字段 Schwab 服务端比文档更严格）。
 - **修复策略**：
-  - 5xx：等几分钟后重试；如果 30 分钟内 ≥ 3 次同类错误 → 告诉用户 Schwab 那边有故障，建议查 [Schwab Developer Portal Status](https://developer.schwab.com/) 公告。
+  - 5xx：等几分钟后重试；如果 30 分钟内 ≥ 3 次同类错误 → 告诉用户 Schwab 那边有故障，
+    建议查 [Schwab Developer Portal Status](https://developer.schwab.com/) 公告。
   - 4xx：对照 `troubleshooting-validation.md` 与 `tool-reference.md` 检查参数；若仍无解 → 在 schwab-marketdata-mcp 仓库提 issue。
 - **验证**：连续 3 次重试有至少 1 次成功 = 临时抖动；持续失败 = 真故障。
 
@@ -31,7 +32,8 @@ MCP server 把所有 Schwab 失败规范化为结构化 dict（`error` 字段非
 ## Decision flow for the agent
 
 1. **永远先查 `error` 字段**再向用户呈现结果。如果非空，按上述路由表跳到对应子文件，**不要把 raw stack trace 显示给用户**。
-2. 对 `SchwabAuthError(reason ∈ {refresh_token_expired, token_not_initialized, callback_url_mismatch})` —— **agent 必须停下让用户走 `auth login_flow`**，不要静默重试。
+2. 对 `SchwabAuthError(reason ∈ {refresh_token_expired, token_not_initialized, callback_url_mismatch})` ——
+   **agent 必须停下让用户走 `auth login_flow`**，不要静默重试。
 3. 对 `SchwabRateLimitError` —— 可在 `retry_after_seconds` 后重试一次；连续两次失败 → 告诉用户。
 4. 对 `SchwabValidationError` —— agent **修正输入后重试一次**（`aapl` → `AAPL`、把 60 个 symbol 拆成 50 + 10）；修正后仍失败才打扰用户。
 

@@ -108,7 +108,7 @@ wait $MCP_PID 2>/dev/null || true
 | `jq` 报 `parse error: Invalid numeric literal` | server 把 stderr / stdout 混在一起；改成 `2>/dev/null`               |
 | `select(.id==2)` 选不到任何东西        | 协议顺序错；`notifications/initialized` 必须在 `initialize` 之后立即发 |
 | 输出全是 `null`                       | `tools/call` 的 `id` 与 jq 里 select 的 id 不一致；检查序号           |
-| 业务 call 失败但 jq 看不到 `error`    | 错误在 result.content[0].text 里，要 `| fromjson | .error`            |
+| 业务 call 失败但 jq 看不到 `error`    | 错误在 result.content[0].text 里，要 `\| fromjson \| .error`            |
 
 ## 不要做的事
 
@@ -123,4 +123,7 @@ wait $MCP_PID 2>/dev/null || true
 
 - JSON-RPC 2.0 规范：<https://www.jsonrpc.org/specification>
 - MCP 规范：<https://modelcontextprotocol.io/specification>
-- Python / TypeScript / Rust 等价文档：[`python-mcp-client.md`](python-mcp-client.md) / [`typescript-mcp-client.md`](typescript-mcp-client.md) / [`rust-mcp-client.md`](rust-mcp-client.md)
+- Python / TypeScript / Rust 等价文档：
+  [`python-mcp-client.md`](python-mcp-client.md) /
+  [`typescript-mcp-client.md`](typescript-mcp-client.md) /
+  [`rust-mcp-client.md`](rust-mcp-client.md)

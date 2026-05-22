@@ -4,7 +4,7 @@
 
 ## 组件总览
 
-```
+```text
 ┌────────────────────┐
 │   AI agent         │  Cursor / Claude / Kiro / 自定义 SDK 客户端
 │   (skills here)    │
@@ -51,7 +51,7 @@
 
 ## 数据流：一次 `get_quote` 调用
 
-```
+```text
 agent.call_tool("get_quote", {"symbol": "AAPL"})
   │
   ▼

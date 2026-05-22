@@ -1,0 +1,20 @@
+# Pre-commit hooks for schwab-marketdata-skill.
+#
+# Install once per clone with:   pre-commit install
+# Run on demand with:            pre-commit run --all-files
+#
+# This config is intentionally minimal: skill repos are markdown-only, so we
+# only enforce lint hygiene on `.md` files.  The project-level config for
+# markdownlint-cli2 lives in `.markdownlint-cli2.jsonc`.
+
+repos:
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.13.0
+    hooks:
+      - id: markdownlint-cli2
+        name: markdownlint-cli2 (auto-fix)
+        # --fix lets the hook normalise list markers, blank lines, fence
+        # styles, etc., so authors do not need to memorise every rule.
+        args: ["--fix"]
+        # Restrict to markdown to skip yaml/json files entirely.
+        files: '\.md$'

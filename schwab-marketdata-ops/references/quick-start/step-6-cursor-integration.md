@@ -53,7 +53,7 @@ pkill -f cursor || true && cursor &
 
 打开 Cursor → `Cmd/Ctrl + L` 开 chat → 输入：
 
-```
+```text
 Use the schwab-marketdata MCP tool get_server_info to print the server info.
 ```
 
