@@ -106,4 +106,6 @@ The exact mechanism depends on your client version.  Typical layouts:
   Schwab Market Data is non-redistributable; private repos are a
   contractual requirement.
 
-License: see [LICENSE](LICENSE).
+## License
+
+MIT License — see [LICENSE](./LICENSE).
