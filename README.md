@@ -202,6 +202,30 @@ Legend: ✅ full support / ⚠️ partial or implementation-defined / ❌ not su
 
 ---
 
+## Acknowledgements
+
+This skill pack is the documentation companion to
+[`schwab-marketdata-mcp`](../schwab-marketdata-mcp), which is built on
+top of:
+
+- **[schwab-py](https://github.com/alexgolec/schwab-py)** by Alex Golec —
+  Unofficial Charles Schwab Trader / Market Data API wrapper for Python
+  (MIT License). The companion MCP server delegates all OAuth and Schwab
+  HTTP traffic to `schwab-py`.
+- **[mcp](https://github.com/modelcontextprotocol/python-sdk)** —
+  Anthropic's official Python SDK for the Model Context Protocol
+  (MIT License).
+
+The skill markdown design pattern is inspired by Anthropic's published
+skill packs (e.g. `helis-authorization`) and other skill packs in the
+Cursor / Claude ecosystem.
+
+This project is **not affiliated with, endorsed by, or sponsored by
+Charles Schwab Corporation or Alex Golec**. Use at your own risk per
+Schwab's [Terms of Service](https://www.schwab.com/legal/terms).
+
+---
+
 ## License
 
 MIT License — see [LICENSE](./LICENSE).

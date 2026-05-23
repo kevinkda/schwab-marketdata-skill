@@ -188,6 +188,27 @@ Kiro CLI、Cline、Roo Code 等其他兼容 skill 的 agent 见下文
 
 ---
 
+## 致谢与上游引用
+
+本 skill 包是 [`schwab-marketdata-mcp`](../schwab-marketdata-mcp) 的
+配套文档包，后者构建于：
+
+- **[schwab-py](https://github.com/alexgolec/schwab-py)**（作者
+  Alex Golec）—— Charles Schwab Trader / Market Data API 的非官方
+  Python wrapper（MIT 许可证）。配套的 MCP 服务端把全部 OAuth 与
+  Schwab HTTP 流量委托给 `schwab-py`。
+- **[mcp](https://github.com/modelcontextprotocol/python-sdk)** ——
+  Anthropic 官方的 Model Context Protocol Python SDK（MIT 许可证）。
+
+本仓库的 skill markdown 设计借鉴了 Anthropic 公开的 skill 包（如
+`helis-authorization`）以及 Cursor / Claude 生态内的其他 skill 包。
+
+本项目**与 Charles Schwab Corporation 或 Alex Golec 无关，未受其背书
+或赞助**。使用前请阅读 Schwab 的
+[服务条款](https://www.schwab.com/legal/terms) 并自行承担风险。
+
+---
+
 ## License
 
 MIT License —— 详见 [LICENSE](./LICENSE)。
