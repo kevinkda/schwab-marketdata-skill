@@ -2,8 +2,10 @@
 
 [English](./README.md) | [简体中文](./README_zh.md)
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Companion](https://img.shields.io/badge/companion-schwab--marketdata--mcp-blue.svg)](../schwab-marketdata-mcp)
+![License](https://img.shields.io/github/license/kevinkda/schwab-marketdata-skill)
+![Translation](https://img.shields.io/badge/i18n-EN%20%2B%20zh--CN-blue)
+![Skills](https://img.shields.io/badge/skills-2-blue)
+![Release](https://img.shields.io/github/v/release/kevinkda/schwab-marketdata-skill)
 
 Two complementary Cursor / Claude **Skills** that wrap the
 [`schwab-marketdata-mcp`](../schwab-marketdata-mcp) server. Both skills are
