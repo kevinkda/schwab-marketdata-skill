@@ -198,6 +198,60 @@ not the wire value (`"$DJI"`).
 | Rust (rmcp or hand-rolled) | [`references/integration/rust-mcp-client.md`](references/integration/rust-mcp-client.md) |
 | Shell + jq pipe | [`references/integration/cli-jq-pipe.md`](references/integration/cli-jq-pipe.md) |
 
+## Data coverage clarifications
+
+### `get_price_history` is the candlestick / kline endpoint
+
+If you're looking for OHLCV bars (candles, klines, candlesticks),
+`get_price_history` is the tool. The response carries a `candles[]`
+array, each entry exposing `open` / `high` / `low` / `close` / `volume`
+/ `datetime` (epoch milliseconds).
+
+Supported granularity comes from the `(period_type, frequency_type,
+frequency)` triple:
+
+- `period_type=DAY`: `MINUTE` × {1, 5, 10, 15, 30} (~48 days for 1-min,
+  ~9 months for 5–30 min).
+- `period_type=MONTH`: `DAILY` / `WEEKLY` (up to 6 months).
+- `period_type=YEAR`: `DAILY` / `WEEKLY` / `MONTHLY` (**up to 20
+  years**).
+- `period_type=YEAR_TO_DATE`: `DAILY` / `WEEKLY` (year-to-date).
+
+Sub-minute candles (seconds, ticks) are not in the Schwab Market Data
+API surface.
+
+→ Full legal-combination table + Cartesian-product error remediation in
+[`references/tools/tool-reference-price-history.md`](references/tools/tool-reference-price-history.md)
+and the MCP repo's
+[README → "Data coverage clarifications"](https://github.com/kevinkda/schwab-marketdata-mcp/blob/main/README.md#data-coverage-clarifications).
+
+### What the Schwab Market Data API does NOT provide
+
+The following data is **architecturally unavailable** through the Schwab
+Market Data Production API and would require a third-party provider:
+
+- **Time & sales / tape (trade-level)** — not in REST or Streaming
+  since Schwab's 2024 API migration removed the `TIMESALE_*` services.
+- **Tick-by-tick history** — not in the Schwab API.
+- **Level 2 historical snapshots** — Streaming only, no REST history.
+- **Fundamental / earnings time series** (EPS history, revenue
+  history, etc.) — `quotes` carry FUNDAMENTAL fields but there is **no**
+  historical endpoint.
+- **News / SEC filings** — not in the Market Data API.
+
+Recommended third-party providers (Polygon.io, Tiingo, Alpaca,
+Databento, FMP, SEC EDGAR) for each data class are listed in the MCP
+repo's
+[README → "Data coverage clarifications"](https://github.com/kevinkda/schwab-marketdata-mcp/blob/main/README.md#data-coverage-clarifications).
+
+### Trader API is out of scope
+
+**Trader API endpoints** (account, orders, transactions, positions)
+are explicitly out of scope — this skill covers **read-only Market
+Data only**. If the user asks to place an order or modify positions,
+refuse immediately and point them at the MCP README's "Responsible
+use" section.
+
 ## Decision tree — pick the right tool
 
 | User intent                                | What to use                                              |
