@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- English mirror translation coverage upgraded from 25 / 65
+  (38%) to **65 / 65 (100%)**. The remaining 40 placeholder
+  scaffolds in `schwab-marketdata-ops-en/references/` (6 oauth,
+  4 integration, 3 operations, 19 troubleshooting, 8 top-level)
+  are now full English translations preserving heading structure,
+  code blocks, tables, and cross-links to the Chinese source.
+  Each translated file retains a `## Source` link back to the
+  matching `schwab-marketdata-ops/references/` file for ongoing
+  cross-reference.
+
 ## [0.2.0] - 2026-05-23
 
 ### Added

@@ -55,8 +55,7 @@ Both skills:
 ## Translation coverage
 
 The English mirror is a structural translation of the Chinese primary —
-some files are fully translated, others are placeholders that link back to
-the Chinese source.
+all reference files are now fully translated.
 
 | Category | Total files | Fully translated | Placeholders |
 | -------- | ----------- | ---------------- | ------------ |
@@ -65,17 +64,16 @@ the Chinese source.
 | Tools reference                | 8  | 8  | 0  |
 | Concepts                       | 4  | 4  | 0  |
 | Workflow playbooks             | 4  | 4  | 0  |
-| OAuth                          | 6  | 0  | 6  |
-| Integration                    | 4  | 0  | 4  |
-| Operations                     | 3  | 0  | 3  |
-| Troubleshooting                | 17 | 0  | 17 |
-| Top-level (other)              | 5  | 0  | 5  |
-| **Total**                      | **60** | **25** | **35** |
+| OAuth                          | 6  | 6  | 0  |
+| Integration                    | 4  | 4  | 0  |
+| Operations                     | 3  | 3  | 0  |
+| Troubleshooting                | 19 | 19 | 0  |
+| Top-level (other)              | 8  | 8  | 0  |
+| **Total**                      | **65** | **65 (100%)** | **0** |
 
-Placeholder files carry the H1 title, a one-paragraph English abstract, and
-a link back to the Chinese source for full content. Contributions to
-upgrade any placeholder to a complete translation are welcome — see the
-existing `*-en` files for the expected style.
+Each English file mirrors the Chinese source structurally (heading
+graph, code blocks, tables) and links back to the Chinese version
+under `Source` for cross-reference.
 
 ---
 
