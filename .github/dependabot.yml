@@ -1,0 +1,39 @@
+# Dependabot configuration — schwab-marketdata-skill
+#
+# This repo currently ships only Markdown skills (no Python, no Node).  The
+# only ecosystem dependabot can usefully scan is GitHub Actions, and even
+# that is a no-op until the repo adds workflows under .github/workflows/.
+# We add the config now so it activates automatically the moment any
+# workflow lands.
+#
+# Strategy:
+# - Weekly cadence on Monday (low review fatigue; one PR per week max).
+# - Group minor + patch into one PR.
+# - Single assignee / reviewer = kevinkda.
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 1
+    assignees:
+      - "kevinkda"
+    reviewers:
+      - "kevinkda"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    groups:
+      actions-minor-and-patch:
+        applies-to: "version-updates"
+        update-types:
+          - "minor"
+          - "patch"
