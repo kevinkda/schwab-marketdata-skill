@@ -6,6 +6,16 @@
 ![Translation](https://img.shields.io/badge/i18n-EN%20%2B%20zh--CN-blue)
 ![Skills](https://img.shields.io/badge/skills-2-blue)
 ![Release](https://img.shields.io/github/v/release/kevinkda/schwab-marketdata-skill)
+![Releases](https://img.shields.io/github/release-date/kevinkda/schwab-marketdata-skill?label=last%20release)
+
+> **v0.3 sprint（进行中）** —— Sprint A Deliverable 2 重写
+> `summary-md-refresh` playbook v2（缓存感知，仅刷新单一 weekly snapshot
+> 段，不覆盖用户手写正文）。相关文件：
+>
+> - [`schwab-marketdata-workflows/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows/playbooks/summary-md-refresh.md)（中文）
+> - [`schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md)（英文镜像）
+> - [`schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md`](./schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md) ——
+>   Shakeout v2（DuckDB 缓存 + 8 信号扫描）。
 
 两个相互配套的 Cursor / Claude **Skill**，封装
 [`schwab-marketdata-mcp`](../schwab-marketdata-mcp) 服务。两个 skill 都是

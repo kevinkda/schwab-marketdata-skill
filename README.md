@@ -6,6 +6,17 @@
 ![Translation](https://img.shields.io/badge/i18n-EN%20%2B%20zh--CN-blue)
 ![Skills](https://img.shields.io/badge/skills-2-blue)
 ![Release](https://img.shields.io/github/v/release/kevinkda/schwab-marketdata-skill)
+![Releases](https://img.shields.io/github/release-date/kevinkda/schwab-marketdata-skill?label=last%20release)
+
+> **v0.3 sprint (in flight)** — Sprint A Deliverable 2 rewrites the
+> `summary-md-refresh` playbook to v2 (DuckDB-cache-aware, scoped to a
+> single weekly snapshot section that does not overwrite hand-written
+> narrative).  See:
+>
+> - [`schwab-marketdata-workflows/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows/playbooks/summary-md-refresh.md) (zh)
+> - [`schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md) (en)
+> - [`schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md`](./schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md)
+>   (zh) — Shakeout v2 with DuckDB cache + 8-signal scan.
 
 Two complementary Cursor / Claude **Skills** that wrap the
 [`schwab-marketdata-mcp`](../schwab-marketdata-mcp) server. Both skills are
