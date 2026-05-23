@@ -6,15 +6,16 @@ required_workspace: "/opt/workspace/code/kevinkda/stock-personal"
 description: |
   Use when the user asks to refresh summary.md, voo-qqq-tracker.md,
   watchlist.md, or run a shakeout-model snapshot, monthly watchlist scan,
-  or option-chain research routine that depends on Schwab Market Data.
+  shakeout-analysis-v2 (8-signal scan with DuckDB-cached candles), or
+  option-chain research routine that depends on Schwab Market Data.
   Provides end-to-end playbooks that orchestrate multiple
   schwab-marketdata-mcp tools and write results back to project markdown
   files in the kevinkda/stock-personal repo.
   Use this skill instead of schwab-marketdata-ops when the task spans
   multiple tool calls and writes to markdown.
   Triggers on "update summary.md", "refresh watchlist", "shakeout
-  snapshot", "VOO/QQQ tracker update", "刷新 summary",
-  "更新 watchlist".
+  snapshot", "shakeout v2", "8-signal scan", "VOO/QQQ tracker
+  update", "刷新 summary", "更新 watchlist", "shakeout 周报".
   对于以上场景使用本 skill；面向用户的所有回答必须使用简体中文。
 ---
 
@@ -44,6 +45,7 @@ description: |
 | 刷新 watchlist 快照（月度/事件触发） | `playbooks/watchlist-snapshot.md`             |
 | 总结性 `summary.md` 重写             | `playbooks/summary-md-refresh.md`             |
 | 期权链研究（单次深挖）               | `playbooks/option-chain-research.md`          |
+| Shakeout 8 项信号扫描 + AI 周报       | `playbooks/shakeout-analysis-v2.md`           |
 
 ## 通用约束（所有 playbook 必须遵守）
 
@@ -68,6 +70,7 @@ description: |
 | `summary-md-refresh` | **30 分钟内幂等** | 每次重写 `## Latest snapshot` 段；30 分钟内重复 commit 会污染 history | `git -C ${target_repo} log -1 --format=%ct -- docs/summary.md` 距 now < 1800 秒 → skip 并告诉用户 |
 | `watchlist-snapshot` | **不幂等（设计）** | 每次会**覆盖** `docs/watchlist.md` 的 Latest snapshot 段，并 **覆盖** `docs/watchlist-history/<date>.md`（同一天再跑就被覆盖） | 一般 1 个月跑 1 次；同一天若需重跑 → 告诉用户当日历史快照会被覆盖，征得同意后继续 |
 | `option-chain-research` | **完全可重复** | 每次生成 **新的** `docs/option-research/<SYMBOL>-<YYYY-MM-DD>.md`（按当天日期命名）；同一天同一 symbol 重跑会覆盖当日 snapshot，但不会污染往日记录 | 同一天同一 symbol 重跑 → 询问用户是否要覆盖当日 snapshot；不同 symbol 或不同日期 → 直接跑 |
+| `shakeout-analysis-v2` | **每日一次** | 每次写入 `research/shakeout-YYYY-MM-DD.md`；同一天再跑会覆盖当日报告，但 §10.4 增补行除外（手动决定） | 当日已存在 `research/shakeout-$(date +%Y-%m-%d).md` → 询问用户是否要覆盖；默认 skip |
 
 agent 在每个 playbook 启动 pre-flight 之后立即判定，skip 时**不调用任何 Schwab tool**（保护配额），只告诉用户为什么 skip。
 
@@ -77,3 +80,4 @@ agent 在每个 playbook 启动 pre-flight 之后立即判定，skip 时**不调
 - `playbooks/watchlist-snapshot.md`
 - `playbooks/summary-md-refresh.md`
 - `playbooks/option-chain-research.md`
+- `playbooks/shakeout-analysis-v2.md`

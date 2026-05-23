@@ -6,15 +6,17 @@ required_workspace: "/opt/workspace/code/kevinkda/stock-personal"
 description: |
   Use when the user asks to refresh summary.md, voo-qqq-tracker.md,
   watchlist.md, or run a shakeout-model snapshot, monthly watchlist scan,
-  or option-chain research routine that depends on Schwab Market Data.
+  shakeout-analysis-v2 (8-signal scan with DuckDB-cached candles), or
+  option-chain research routine that depends on Schwab Market Data.
   Provides end-to-end playbooks that orchestrate multiple
   schwab-marketdata-mcp tools and write results back to project markdown
   files in the kevinkda/stock-personal repo.
   Use this skill instead of schwab-marketdata-ops-en when the task spans
   multiple tool calls and writes to markdown.
   Triggers on "update summary.md", "refresh watchlist", "shakeout
-  snapshot", "VOO/QQQ tracker update", "refresh summary",
-  "update watchlist".
+  snapshot", "shakeout v2", "8-signal scan", "VOO/QQQ tracker
+  update", "refresh summary", "update watchlist",
+  "shakeout weekly report".
   For these scenarios use this skill; always respond to the user in English.
 ---
 
@@ -48,6 +50,7 @@ description: |
 | Refresh watchlist snapshot (monthly/event) | `playbooks/watchlist-snapshot.md`             |
 | Rewrite summary `summary.md`               | `playbooks/summary-md-refresh.md`             |
 | Option-chain research (one-off deep dive)  | `playbooks/option-chain-research.md`          |
+| Shakeout 8-signal scan + AI weekly report  | `playbooks/shakeout-analysis-v2.md`           |
 
 ## Universal constraints (every playbook must follow)
 
@@ -78,6 +81,7 @@ table below to decide whether to skip:
 | `summary-md-refresh` | **Idempotent within 30 minutes** | Each run rewrites the `## Latest snapshot` section; multiple commits within 30 minutes pollute history | `git -C ${target_repo} log -1 --format=%ct -- docs/summary.md` is < 1800 seconds from now → skip and inform the user |
 | `watchlist-snapshot` | **Not idempotent (by design)** | Each run **overwrites** the Latest snapshot section in `docs/watchlist.md`, and **overwrites** `docs/watchlist-history/<date>.md` (running again the same day overwrites it) | Typically run once a month; if you need to re-run on the same day → tell the user that today's history snapshot will be overwritten and obtain consent first |
 | `option-chain-research` | **Fully repeatable** | Each run produces a **new** `docs/option-research/<SYMBOL>-<YYYY-MM-DD>.md` (named by today's date); re-running the same symbol on the same day overwrites that day's snapshot but does not pollute prior days | Same symbol same day → ask the user whether to overwrite today's snapshot; different symbol or different day → run directly |
+| `shakeout-analysis-v2` | **Once per day** | Each run writes `research/shakeout-YYYY-MM-DD.md`; running again the same day overwrites that report (the optional §10.4 row append is decided manually) | If `research/shakeout-$(date +%Y-%m-%d).md` already exists → ask the user whether to overwrite; default = skip |
 
 The agent decides immediately after the playbook's pre-flight; when
 skipping, it **calls no Schwab tools** (to protect the quota) and only
@@ -89,3 +93,4 @@ explains why it skipped.
 - `playbooks/watchlist-snapshot.md`
 - `playbooks/summary-md-refresh.md`
 - `playbooks/option-chain-research.md`
+- `playbooks/shakeout-analysis-v2.md`
