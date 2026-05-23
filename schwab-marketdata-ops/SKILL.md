@@ -20,9 +20,10 @@ description: |
   Use when the user wants to call Schwab Market Data Production via the
   schwab-marketdata-mcp server, troubleshoot OAuth or 7-day refresh-token
   expiry, recover from 401/429/5xx errors, or look up the exact input/output
-  schema for any of the 12 market-data tools (quotes×2, price_history,
+  schema for any of the 13 market-data tools (quotes×2, price_history,
   option_chain×2, market_hours×2, movers, search_instruments,
-  get_instrument_by_cusip, health_check, get_server_info).
+  get_instrument_by_cusip, health_check, get_server_info,
+  get_streaming_snapshot).
   Use this skill instead of schwab-marketdata-workflows when the request is
   about a single MCP tool call or troubleshooting (not a multi-step
   playbook).
@@ -47,7 +48,7 @@ description: |
 
 ```text
 get_server_info()
-→ { "server_version": "0.1.x", "supported_tools": [...12 names...] }
+→ { "server_version": "0.1.x", "supported_tools": [...13 names...] }
 ```
 
 若版本不匹配或调用失败：**立即停下**，告知用户升级
@@ -73,7 +74,7 @@ get_server_info()
 | 3 | [`references/quick-start/step-3-first-oauth.md`](references/quick-start/step-3-first-oauth.md) | `token.json` 已落地（chmod 600） |
 | 4 | [`references/quick-start/step-4-token-health-check.md`](references/quick-start/step-4-token-health-check.md) | `health` 模块退出 0，`token_state == "valid"` |
 | 5 | [`references/quick-start/step-5-first-mcp-tool-call.md`](references/quick-start/step-5-first-mcp-tool-call.md) | 最小 Python MCP client 跑通 `get_quote("VOO")` |
-| 6 | [`references/quick-start/step-6-cursor-integration.md`](references/quick-start/step-6-cursor-integration.md) | `~/.cursor/mcp.json` 注册成功，agent 能调 12 个 tool |
+| 6 | [`references/quick-start/step-6-cursor-integration.md`](references/quick-start/step-6-cursor-integration.md) | `~/.cursor/mcp.json` 注册成功，agent 能调 13 个 tool |
 | 7 | [`references/quick-start/step-7-cron-launchd-setup.md`](references/quick-start/step-7-cron-launchd-setup.md) | cron / launchd 健康巡检已启用，桌面通知通道已自检 |
 
 ## Common usage scenarios
@@ -188,6 +189,51 @@ get_movers(index="DJI"|"COMPX"|"SPX"|..., sort_order=..., frequency=...)
 | Rust（rmcp 或自实现） | [`references/integration/rust-mcp-client.md`](references/integration/rust-mcp-client.md) |
 | Shell + jq pipe | [`references/integration/cli-jq-pipe.md`](references/integration/cli-jq-pipe.md) |
 
+## Data coverage clarifications
+
+### `get_price_history` 就是 K 线 / candlestick 接口
+
+如果你在找 OHLCV bar（candle / kline / candlestick），`get_price_history`
+就是对应的 tool。返回结构包含 `candles[]`，每根 candle 含 `open` / `high`
+/ `low` / `close` / `volume` / `datetime`（毫秒级 epoch）。
+
+支持的粒度由 `(period_type, frequency_type, frequency)` 三元组决定：
+
+- `period_type=DAY`：`MINUTE` × {1, 5, 10, 15, 30}（约 48 天 / 9 个月历史）
+- `period_type=MONTH`：`DAILY` / `WEEKLY`（最多 6 个月）
+- `period_type=YEAR`：`DAILY` / `WEEKLY` / `MONTHLY`（**最多 20 年**）
+- `period_type=YEAR_TO_DATE`：`DAILY` / `WEEKLY`（年初至今）
+
+亚分钟级 K 线（秒级、tick 级）不在 Schwab Market Data API 范围内。
+
+→ 完整合法组合表 + 笛卡尔积错误处置见
+[`references/tools/tool-reference-price-history.md`](references/tools/tool-reference-price-history.md)
+与 MCP 仓库的
+[README → "Data coverage clarifications"](https://github.com/kevinkda/schwab-marketdata-mcp/blob/main/README.md#data-coverage-clarifications)。
+
+### Schwab Market Data API **不提供**的数据
+
+以下数据在 Schwab Market Data Production API 上**架构性不可用**，需要
+第三方数据源补齐：
+
+- **Time & sales / tape（逐笔成交）** —— Schwab 2024 API 迁移移除
+  `TIMESALE_*` services 后，REST 与 Streaming 都没有。
+- **Tick-by-tick history（逐笔历史）** —— Schwab API 不提供。
+- **Level 2 历史快照** —— 仅 Streaming，REST 无历史回放。
+- **基本面 / 财报时间序列**（EPS 历史、营收历史等）—— `quotes` 带
+  FUNDAMENTAL 字段但**没有**对应历史接口。
+- **新闻 / SEC 文件** —— Market Data API 不提供。
+
+各数据类的推荐第三方（Polygon.io、Tiingo、Alpaca、Databento、FMP、SEC
+EDGAR）见 MCP 仓库
+[README → "Data coverage clarifications"](https://github.com/kevinkda/schwab-marketdata-mcp/blob/main/README.md#data-coverage-clarifications)。
+
+### Trader API 不在范围内
+
+**Trader API 端点**（账户、订单、成交、持仓）显式排除在范围之外 ——
+本 skill 只涵盖**只读 Market Data**。如果用户请求下单 / 修改持仓，立刻
+拒绝并指向 MCP README 的 "Responsible use" 段。
+
 ## Decision tree — pick the right tool
 
 | 用户意图                                  | 用什么 tool                                              |
@@ -203,7 +249,8 @@ get_movers(index="DJI"|"COMPX"|"SPX"|..., sort_order=..., frequency=...)
 | 用 ticker 模糊查找 instrument             | `search_instruments(symbols, projection)`                |
 | 用 9 位 CUSIP 精确查找                    | `get_instrument_by_cusip(cusip)`                         |
 | 调试 token 状态 / 错误计数                | `health_check()`                                         |
-| 取 server 元数据（版本、12 tool 列表）    | `get_server_info()`                                      |
+| 取 server 元数据（版本、13 tool 列表）    | `get_server_info()`                                      |
+| 实时 bid/ask/last 或 1 分钟 K 线（实验性）| `get_streaming_snapshot(symbols, service, duration_ms?)` |
 
 **枚举值**全部用 `models.py` 中定义的 **enum 名**（如 `"VOLUME"`、
 `"NASDAQ"`、`"DAY"`），MCP server 内部会翻译成 schwab-py 的 wire 值。
@@ -276,6 +323,13 @@ search_instruments(symbols, projection)
 get_instrument_by_cusip(cusip: 9 alphanumerics)
 health_check()
 get_server_info()
+
+# Experimental — bounded WebSocket snapshot (≤10 s):
+get_streaming_snapshot(
+  symbols: list[str],                                # ≤ 20
+  service: "LEVELONE_EQUITIES" | "CHART_EQUITY",
+  duration_ms: int = 2000                            # [500, 10000]
+)
 ```
 
 ## Error normalization
@@ -324,11 +378,11 @@ OAuth / 限流 / 调用 / 安全 / skill / 故障"7 类分组）。
 | [quick-start/step-6-cursor-integration.md](references/quick-start/step-6-cursor-integration.md) | 注册到 Cursor / Claude `~/.cursor/mcp.json` |
 | [quick-start/step-7-cron-launchd-setup.md](references/quick-start/step-7-cron-launchd-setup.md) | cron / launchd / systemd 健康巡检自动化 |
 
-### Tools (1 index + 7 family files)
+### Tools (1 index + 8 family files)
 
 | File | Description |
 | ---- | ----------- |
-| [tools/index.md](references/tools/index.md) | 12 tool 路由 + 跨 tool 公约 |
+| [tools/index.md](references/tools/index.md) | 13 tool 路由 + 跨 tool 公约 |
 | [tools/tool-reference-quotes.md](references/tools/tool-reference-quotes.md) | `get_quote` / `get_quotes` 完整 schema |
 | [tools/tool-reference-price-history.md](references/tools/tool-reference-price-history.md) | `get_price_history` + cartesian-product 合法表 |
 | [tools/tool-reference-options.md](references/tools/tool-reference-options.md) | `get_option_chain` / `get_option_expiration_chain` |
@@ -336,6 +390,7 @@ OAuth / 限流 / 调用 / 安全 / skill / 故障"7 类分组）。
 | [tools/tool-reference-movers.md](references/tools/tool-reference-movers.md) | `get_movers` |
 | [tools/tool-reference-instruments.md](references/tools/tool-reference-instruments.md) | `search_instruments` / `get_instrument_by_cusip` |
 | [tools/tool-reference-meta.md](references/tools/tool-reference-meta.md) | `health_check` / `get_server_info` |
+| [tools/tool-reference-streaming.md](references/tools/tool-reference-streaming.md) | `get_streaming_snapshot`（实验性） |
 
 ### OAuth (5 files)
 

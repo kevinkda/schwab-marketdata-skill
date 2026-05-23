@@ -1,6 +1,6 @@
 # Tool reference — index
 
-> All 12 outward-facing tools are `async`.  All inputs are validated by
+> All 13 outward-facing tools are `async`.  All inputs are validated by
 > Pydantic before any network call.  All outputs are JSON dicts.  Errors
 > are returned **as dicts** (`{"error": "Schwab…Error", …}`) — they are
 > *not* raised back through the MCP protocol.
@@ -16,6 +16,7 @@
 | Movers | [`tool-reference-movers.md`](tool-reference-movers.md) | `get_movers` | 当日 top movers |
 | Instruments | [`tool-reference-instruments.md`](tool-reference-instruments.md) | `search_instruments` / `get_instrument_by_cusip` | 模糊查找或 CUSIP 精确查找 |
 | Meta | [`tool-reference-meta.md`](tool-reference-meta.md) | `health_check` / `get_server_info` | 健康巡检与版本握手 |
+| Streaming 🧪 | [`tool-reference-streaming.md`](tool-reference-streaming.md) | `get_streaming_snapshot` | 准实时 bid/ask/last 或 1 分钟 K 线（实验性） |
 
 ## 跨 tool 公约
 
