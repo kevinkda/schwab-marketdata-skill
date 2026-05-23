@@ -1,53 +1,99 @@
-# Auth — `insecure_token_perms`
+# Troubleshooting — `SchwabAuthError(reason="insecure_token_perms")`
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Remediation when `token.json` mode is not `600` or its parent directory is not `700`.
+token.json's mode is not `600`, or the parent directory is not `700`,
+so the server refuses to start.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md`](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md).
 
 ## Symptom
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+- At server start, stderr shows `chmod 600 ...` / `chmod 700 ...`
+  hints
+- `health_check()` returns `token_state == "insecure_perms"`
+- A business call returns
+  `{"error":"SchwabAuthError","reason":"insecure_token_perms"}`
 
-## Root cause（5 种典型）
+## Root cause (5 typical patterns)
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+1. `umask` is not `077`; schwab-py wrote the file with the wrong
+   mode the first time
+2. You used `cp -p` from elsewhere and the **destination** mode was
+   the default (`644`)
+3. `rsync` was run without `--perms`
+4. You restored the token from an NTFS / FAT32 external disk on
+   macOS (FAT32 does not support unix permissions)
+5. Another process (IDE / file manager) running as administrator
+   rewrote the file
 
-## 检查命令
+## Diagnostic commands
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+### Linux
 
-## 修复命令
+```bash
+TOKEN_PATH="${XDG_STATE_HOME:-$HOME/.local/state}/schwab-marketdata-mcp/token.json"
+stat -c '%a %n' "$TOKEN_PATH" "$(dirname "$TOKEN_PATH")"
+# Expected:
+#   600 ~/.local/state/schwab-marketdata-mcp/token.json
+#   700 ~/.local/state/schwab-marketdata-mcp
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+### macOS
 
-## 验证命令
+```bash
+TOKEN_PATH="${XDG_STATE_HOME:-$HOME/.local/state}/schwab-marketdata-mcp/token.json"
+stat -f '%A %N' "$TOKEN_PATH" "$(dirname "$TOKEN_PATH")"
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+## Fix commands
 
-## 防止重复发生
+```bash
+TOKEN_PATH="${XDG_STATE_HOME:-$HOME/.local/state}/schwab-marketdata-mcp/token.json"
+chmod 700 "$(dirname "$TOKEN_PATH")"
+chmod 600 "$TOKEN_PATH"
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+## Verification
 
-## 为什么 server 这么严？
+```bash
+uv run python -m schwab_marketdata_mcp.health   # exit 0
+# Expect: token_state == "valid"
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+## Prevent recurrence
+
+Add `umask 077` to your shell rc:
+
+```bash
+# ~/.zshrc or ~/.bashrc
+umask 077
+```
+
+Or set it temporarily in the shell that runs the server:
+
+```bash
+umask 077 && uv run schwab-marketdata-mcp
+```
+
+## Why is the server this strict?
+
+token.json contains the refresh_token; if it leaks an attacker can
+**call any Market Data API on your behalf** for 7 days, plus (if
+they refresh in time) keep rotating it. The standard minimum
+permission on Linux / macOS is `600` (owner read/write only); there
+is no reason to relax it.
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+- **Do not** try `chmod 644` or `chmod 666` to bypass the check —
+  the server re-validates at startup.
+- **Do not** add a `--no-perm-check` flag to the server CLI (no such
+  flag exists; this is by design).
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-insecure-perms.md) for full content._
+- Four TokenStates: [`auth-token-states.md`](auth-token-states.md)
+- Credential leak response: [`../credentials-rotate-runbook.md`](../credentials-rotate-runbook.md)
+- OAuth flow: [`../oauth/oauth-overview.md`](../oauth/oauth-overview.md)

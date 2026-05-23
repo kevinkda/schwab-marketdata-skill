@@ -1,49 +1,89 @@
-# Validation — `get_quotes` over-50 symbols
+# Troubleshooting — `get_quotes` exceeded 50 symbols
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Remediation when `get_quotes` is called with more than 50 symbols (chunking template).
+`get_quotes` / `search_instruments` accepts at most 50 symbols per
+call. Exceeding the limit is rejected immediately by Pydantic.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md`](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md).
 
 ## Symptom
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+```text
+{"error":"SchwabValidationError","field":"symbols","message":"max length 50"}
+```
 
 ## Root cause
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+The Schwab hard cap is 50 / call; the server-side Pydantic
+`max_length=50` enforces it.
 
-## 检查命令
+## Diagnostic command
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+```python
+print(len(symbols))   # must be ≤ 50
+```
 
-## 修复策略
+## Remediation strategy
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+Chunk yourself:
 
-## 限流注意
+```python
+def chunked(lst, n=50):
+    for i in range(0, len(lst), n):
+        yield lst[i:i+n]
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+results = {}
+for batch in chunked(symbols, 50):
+    page = await get_quotes(symbols=batch, fields=["QUOTE"])
+    results.update(page)
+```
 
-## Verify
+TypeScript equivalent:
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+```typescript
+function* chunked<T>(arr: T[], n = 50): Generator<T[]> {
+    for (let i = 0; i < arr.length; i += n) {
+        yield arr.slice(i, i + n);
+    }
+}
+
+const results: Record<string, unknown> = {};
+for (const batch of chunked(symbols, 50)) {
+    const page = await c.call("get_quotes", { symbols: batch, fields: ["QUOTE"] });
+    Object.assign(results, page);
+}
+```
+
+## Rate-limit note
+
+Each `get_quotes(50)` consumes **1 token-bucket slot**. With 1,000
+symbols you split into 20 batches and consume 20 slots; under the
+~120/min quota that's well within budget.
+
+But **do not** dispatch the 20 batches concurrently with
+`asyncio.gather` (it bursts the bucket; see
+[`rate-limit-token-bucket-empty.md`](rate-limit-token-bucket-empty.md)).
+Recommended: serialize at ~0.5s spacing.
+
+## Verification
+
+```python
+for batch in chunked(symbols, 50):
+    page = await get_quotes(symbols=batch)
+    assert "error" not in page or page["error"] is None
+```
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+- **Do not** patch `max_length` to 100 in a fork — Schwab's server
+  will reject first.
+- **Do not** comma-join 50 symbols into a single string —
+  `symbols` is a list type.
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-batch-50.md) for full content._
+- Quotes tool reference: [`../tools/tool-reference-quotes.md`](../tools/tool-reference-quotes.md)
+- Rate-limit handling: [`rate-limit-overview.md`](rate-limit-overview.md)
+- Validation overview: [`validation-overview.md`](validation-overview.md)

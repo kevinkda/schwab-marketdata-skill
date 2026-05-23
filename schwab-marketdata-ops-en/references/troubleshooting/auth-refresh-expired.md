@@ -1,53 +1,79 @@
-# Auth — `refresh_token_expired`
+# Troubleshooting — `SchwabAuthError(reason="refresh_token_expired")`
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Remediation when the refresh_token has already expired (must re-run `login_flow`).
+**Already expired.** A human must run a full OAuth flow again.
+**No** token roll / refresh attempt can recover from this.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md`](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md).
 
 ## Symptom
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+- Business tool calls return
+  `{"error":"SchwabAuthError","reason":"refresh_token_expired"}`
+- schwab-py's internal refresh fails with `OAuth2Error: invalid_grant`
+- `health_check()` may **still** report `token_state == "valid"` (the
+  local file is unchanged), but every business call fails
 
 ## Root cause
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+The refresh_token's **absolute** 7-day lifetime has expired and the
+server has invalidated it; **no recovery is possible**. This is a
+hard limit of Schwab's OAuth.
 
-## 检查命令
+## Diagnostic command
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+```bash
+uv run python -m schwab_marketdata_mcp.health
+# token_state == "valid" but token_expires_in_days <= 0
+```
 
-## 修复命令
+## Fix commands
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+```bash
+uv run python -m schwab_marketdata_mcp.auth login_flow
+# Remote / SSH-only:
+uv run python -m schwab_marketdata_mcp.auth manual_flow
+```
 
-## 验证命令
+## Verification
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+```bash
+uv run python -m schwab_marketdata_mcp.health   # exit 0
+# Then call get_quote("VOO") via a minimal MCP client and confirm 200 OK
+# (see quick-start/step-5-first-mcp-tool-call.md)
+```
 
-## 常见混淆
+## Common confusions
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+| Confusion                                   | The truth                                                  |
+| ------------------------------------------- | ---------------------------------------------------------- |
+| "I just refreshed, it shouldn't be expired" | A refresh does not extend the 7-day total lifetime; it only rotates a new RT |
+| "Can I roll back to an old token.json backup?" | No. rotate-on-use invalidates the old RT immediately      |
+| "Can the 7-day limit be bypassed?"           | No. This is built into Schwab's OAuth design, enforced server side |
+| "Will restarting the server fix it?"         | No. Restarting the server has no effect on server-side token state |
 
-## agent 行为约束
+## Agent behavior constraints
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+- The agent **must stop** and let the user run `auth login_flow`;
+  **do not** silently retry.
+- The agent should print the exact command to stdout / chat (`uv run
+  python -m schwab_marketdata_mcp.auth login_flow`) so the user can
+  copy-paste.
+- The agent **should not** delete token.json proactively — schwab-py
+  will overwrite it once the user reauthorizes.
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+- **Do not** run `login_flow` from cron (OAuth requires a human).
+- **Do not** treat this as a transient error and retry.
+- **Do not** confuse it with a callback URL mismatch (different
+  reason).
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expired.md) for full content._
+- Token lifecycle: [`../oauth/oauth-token-lifecycle.md`](../oauth/oauth-token-lifecycle.md)
+- Early-warning handling: [`auth-refresh-expiring-soon.md`](auth-refresh-expiring-soon.md)
+- OAuth login_flow: [`../oauth/oauth-login-flow.md`](../oauth/oauth-login-flow.md)
+- OAuth manual_flow: [`../oauth/oauth-manual-flow.md`](../oauth/oauth-manual-flow.md)

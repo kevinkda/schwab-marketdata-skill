@@ -1,41 +1,76 @@
-# Validation — top-level routing for input errors
+# Troubleshooting — Validation overview
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Routing index for SchwabValidationError by field: symbol / batch size / pricehistory cartesian / OSI format.
+`SchwabValidationError` is an input rejection at the **local
+Pydantic layer** in the MCP server; it **does not consume** Schwab
+API quota. The error always carries a `field` attribute pointing at
+the offending parameter.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md`](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md).
 
-## 4 种症状路由
+## Routing for the 4 symptoms
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+| Symptom                              | Child file                                                                          |
+| ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `field="symbol"` / `"symbols"`       | [`validation-symbol.md`](validation-symbol.md)                                       |
+| price-history Cartesian product is illegal | [`validation-pricehistory-cartesian.md`](validation-pricehistory-cartesian.md)        |
+| `get_quotes` exceeds 50 symbols      | [`validation-batch-50.md`](validation-batch-50.md)                                  |
+| OSI option symbol format wrong        | [`validation-osi-format.md`](validation-osi-format.md)                              |
 
-## 错误形态
+## Error shape
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+```text
+{
+  "error": "SchwabValidationError",
+  "field": "symbol|symbols|period_type|period|frequency_type|frequency|cusip|projection|...",
+  "message": "..."
+}
+```
+
+The `field` value is the exact attribute name on the failing
+Pydantic model. `message` typically references the validator output
+(e.g. `"string does not match regex '^[A-Z$./ ]{1,21}$'"`).
 
 ## Decision flow
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+1. **Fix the input and retry once** (`aapl` → `AAPL`, split 60
+   symbols into 50 + 10); only escalate if the corrected call still
+   fails.
+2. **Do not** treat a validation error as a server bug — 99% of the
+   time it is an input parameter problem.
+3. **Do not** add a second-level regex check on the agent side —
+   the server already does this; the agent only needs to fix the
+   parameter.
 
-## 通用修复模板
+## General fix template
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+```python
+import re
+
+def normalize_symbol(s: str) -> str:
+    s = s.strip().upper()
+    if not re.fullmatch(r'[A-Z$./ ]{1,21}', s):
+        raise ValueError(f"unfit symbol: {s!r}")
+    return s
+
+def chunked(lst, n=50):
+    for i in range(0, len(lst), n):
+        yield lst[i:i+n]
+```
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+- **Do not** retry with the same parameters after a
+  `SchwabValidationError` (it will fail again the same way).
+- **Do not** file the validation error as a server bug (the vast
+  majority are input issues; consult this routing table first).
+- **Do not** add agent-side regex re-validation — the server has
+  already done it; the agent only needs to fix the parameter and
+  retry once.
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/validation-overview.md) for full content._
+- Error model overview: [`../error-recovery.md`](../error-recovery.md)
+- 12-tool schema: [`../tools/index.md`](../tools/index.md)

@@ -1,49 +1,95 @@
-# Auth — `callback_url_mismatch` (OAuth phase)
+# Troubleshooting — `SchwabAuthError(reason="callback_url_mismatch")`
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Remediation when the OAuth callback URL does not match between the Developer Portal and `.env`.
+The `SCHWAB_CALLBACK_URL` in `.env` does not match the Callback URL
+registered on the Schwab Developer Portal. OAuth performs a
+**character-exact match** at the callback stage; a single
+mismatched character causes failure.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md`](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md).
 
 ## Symptom
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+- After `auth login_flow` opens the browser, the OAuth redirect step
+  reports `MismatchingStateException ("CSRF Warning!")`
+- The server raises this error directly at startup (startup-time
+  validation)
+- A business call will not trigger this reason — it surfaces during
+  the very first OAuth attempt
 
 ## Root cause
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+The `.env` value of `SCHWAB_CALLBACK_URL` is **not exactly equal** to
+the value registered on the [Developer Portal](https://developer.schwab.com/dashboard/apps).
+A single-character difference (trailing slash, http vs https, port
+number, subdomain, case) is enough to fail the match.
 
-## 检查命令
+## Diagnostic command
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+```bash
+grep -E '^SCHWAB_CALLBACK_URL=' /path/to/schwab-marketdata-mcp/.env
+# Then check the registered value at https://developer.schwab.com/dashboard/apps
+```
 
-## 修复命令
+Or use dry-run to validate ahead of time:
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+```bash
+uv run python -m schwab_marketdata_mcp.auth login_flow --dry-run
+# Outputs "Callback URL: ..."; character-diff against the Portal value.
+```
 
-## 验证命令
+## Fix command
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+Edit `.env` so that `SCHWAB_CALLBACK_URL` is **byte-identical** to the
+value on the Developer Portal:
 
-## 9 种常见的不一致形态
+```bash
+# Restart the server after editing .env
+pkill -f schwab_marketdata_mcp || true
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+If you have already attempted OAuth a few times unsuccessfully:
+
+```bash
+# No need to rm token.json — since OAuth never succeeded, no token exists
+uv run python -m schwab_marketdata_mcp.auth login_flow
+```
+
+## Verification
+
+```bash
+uv run python -m schwab_marketdata_mcp.auth login_flow
+# Browser flow no longer reports the callback mismatch
+uv run python -m schwab_marketdata_mcp.health   # exit 0
+```
+
+## 9 common mismatch patterns
+
+For full detail see [`../oauth/oauth-callback-mismatch.md`](../oauth/oauth-callback-mismatch.md);
+the 5 most common patterns are:
+
+| In `.env`                            | On the Portal                          |
+| ------------------------------------ | -------------------------------------- |
+| `https://127.0.0.1:8182`             | `https://127.0.0.1:8182/`              |
+| `http://127.0.0.1:8182`              | `https://127.0.0.1:8182`               |
+| `https://localhost:8182`             | `https://127.0.0.1:8182`               |
+| `https://127.0.0.1:8182/callback`    | `https://127.0.0.1:8182`               |
+| Trailing hidden CR / LF              | (none)                                 |
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+- **Do not** try to register with a wildcard (Schwab does not support
+  it).
+- **Do not** quote the callback URL inside `.env` (the shell parsing
+  changes the byte sequence).
+- **Do not** retry OAuth repeatedly without diff'ing the `.env` value
+  against the Portal — the OAuth code expires in 5 minutes, so
+  repeated retries just waste time.
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-callback-url-mismatch.md) for full content._
+- Callback URL mismatch deep dive: [`../oauth/oauth-callback-mismatch.md`](../oauth/oauth-callback-mismatch.md)
+- OAuth login_flow: [`../oauth/oauth-login-flow.md`](../oauth/oauth-login-flow.md)
+- OAuth manual_flow: [`../oauth/oauth-manual-flow.md`](../oauth/oauth-manual-flow.md)

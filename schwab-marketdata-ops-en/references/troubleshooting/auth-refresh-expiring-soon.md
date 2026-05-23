@@ -1,49 +1,78 @@
-# Auth — `refresh_token_expired_soon` (< 12h warning)
+# Troubleshooting — `SchwabAuthError(reason="refresh_token_expired_soon")`
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Remediation when the refresh_token has less than ~12 hours until expiry.
+A **warning-class** error: the refresh_token's 7-day absolute
+lifetime has < 12 hours remaining. Strongly recommended to
+reauthorize immediately rather than wait until it actually expires.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md`](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md).
 
 ## Symptom
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+- `health_check()` returns `token_expires_in_days < 0.5`
+- At server start, stderr shows
+  `WARNING refresh_token_expires_soon`
+- The cron `health.py` writes a marker file at
+  `~/Desktop/SCHWAB_REAUTH_NEEDED.md`
+- macOS Notification Center / Linux notify-send raises a
+  notification
 
 ## Root cause
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+The refresh_token's **absolute** 7-day lifetime is almost up. This
+is a hard limit of Schwab's OAuth and **cannot be bypassed**. No
+client (schwab-py included) can extend it.
 
-## 检查命令
+## Diagnostic command
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+```bash
+uv run python -m schwab_marketdata_mcp.health
+# Look at token_expires_in_days; < 0.5 = expires within 12 hours
+```
 
-## 修复命令
+## Fix commands
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+Standard laptop (recommended):
 
-## 验证命令
+```bash
+uv run python -m schwab_marketdata_mcp.auth login_flow
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+SSH-only / headless:
 
-## 为什么是 12 小时不是 1 小时？
+```bash
+uv run python -m schwab_marketdata_mcp.auth manual_flow
+```
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+## Verification
+
+```bash
+uv run python -m schwab_marketdata_mcp.health
+# Expect: exit 0; token_state == "valid"; token_expires_in_days >= 6.5
+ls ~/Desktop/SCHWAB_REAUTH_NEEDED.md 2>/dev/null && echo "marker still exists"
+# Expect: the marker file has been deleted (the health module clears
+# it once the token is valid)
+```
+
+## Why 12 hours instead of 1 hour?
+
+Empirical observation: server-side refresh_token invalidation has a
+~30-minute uncertainty window (caching plus clock drift); add the
+desktop notification latency (cron 4h period + the time between the
+user seeing the notification and actually sitting down to
+reauthorize), and 12 hours is a reasonable buffer.
 
 ## What not to do
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+- **Do not** wait until the token is fully expired — every piece of
+  in-flight agent work will then fail.
+- **Do not** try to automate `auth login_flow` from cron — a human
+  is required.
 
 ## References
 
-_Translation in progress — see the [Chinese version](../../../schwab-marketdata-ops/references/troubleshooting/auth-refresh-expiring-soon.md) for full content._
+- Token lifecycle: [`../oauth/oauth-token-lifecycle.md`](../oauth/oauth-token-lifecycle.md)
+- Fully expired handling: [`auth-refresh-expired.md`](auth-refresh-expired.md)
+- Health-check automation: [`../quick-start/step-7-cron-launchd-setup.md`](../quick-start/step-7-cron-launchd-setup.md)
