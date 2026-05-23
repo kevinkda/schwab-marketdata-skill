@@ -293,9 +293,9 @@ a tag name that has been published, even if deleted.
 | LICENSE present (MIT) | ✅ |
 | README (EN + ZH, with i18n nav) | ✅ |
 | `main` pushed to `origin` | ✅ (in sync with `origin/main`) |
-| `CHANGELOG.md` | ⚠️ **missing — create before tagging** |
+| `CHANGELOG.md` | ✅ added in a11e1d6; `[0.1.0]` section frozen at release time |
 | Per-skill `version:` field in `SKILL.md` | ⚠️ Not present. Repo tag is the version of record. |
-| Uncommitted edits in working tree | ⚠️ A couple of `M` files at doc creation time — review and commit/discard before release |
+| Uncommitted edits in working tree | ✅ clean as of 2026-05-23 |
 | Companion MCP release tag | ⚠️ Not yet released. The skill release should reference the corresponding `schwab-marketdata-mcp` `vX.Y.Z` tag — release the MCP server **first**, then the skill repo. |
 
 **Verdict:** ready for `v0.1.0` once `CHANGELOG.md` is added, the working

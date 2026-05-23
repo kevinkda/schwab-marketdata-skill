@@ -14,7 +14,8 @@ dependencies:
 governance:
   data_classification: "non-redistributable (Schwab Market Data)"
   written_artifacts_must_stay_in: "private repositories"
-  prohibited_force_push_targets: ["main", "master", "mainline"]
+  prohibited_force_push_targets: ["main", "mainline"]
+  # "master" no longer included; GitHub default has been "main" since 2020. Legacy repos should be migrated.
 description: |
   Use when the user wants to call Schwab Market Data Production via the
   schwab-marketdata-mcp server, troubleshoot OAuth or 7-day refresh-token

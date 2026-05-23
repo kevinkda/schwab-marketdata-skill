@@ -1,5 +1,8 @@
 # Credentials rotation runbook
 
+> **Note**: legacy repos using `master` as the default branch should
+> migrate to `main`; this runbook references only modern conventions.
+
 > **Trigger** — any of:
 >
 > - `gitleaks` / `detect-secrets` flagged a real-looking secret in a commit.
@@ -13,7 +16,7 @@ attacker access.  Repository hygiene comes second.
 
 ## ⚠️ Git Safety Protocol — non-negotiable rules
 
-- **NEVER** force-push to `main` / `master` / `mainline` of a public or
+- **NEVER** force-push to `main` / `mainline` of a public or
   shared repository.
 - **NEVER** rewrite history that has been pushed without first creating
   a security branch and going through normal PR review (even on a

@@ -75,6 +75,6 @@ git reset --soft HEAD~1   # 撤销 commit 但保留 working tree 变更
 | Symptom                                          | Action                                                                          |
 | ------------------------------------------------ | ------------------------------------------------------------------------------- |
 | `SchwabAuthError(reason="refresh_token_expired")`| Stop, ask user to run `auth login_flow`.                                        |
-| `SchwabRateLimitError`                           | Wait `retry_after_seconds`, then continue.  If twice in a row, abort.           |
+| `SchwabRateLimitError`                           | Wait `retry_after_seconds`, then continue.  If twice in a row, stop and surface to user.           |
 | `gh repo view` fails / repo not private          | **Stop and refuse to write.**  Tell the user; do not bypass.                     |
 | Previous snapshot timestamp is < 30 minutes ago  | Politely ask the user if they really want a duplicate; default = skip.           |

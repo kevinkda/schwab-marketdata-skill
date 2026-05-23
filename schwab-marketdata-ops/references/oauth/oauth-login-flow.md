@@ -58,7 +58,7 @@ uv run python -m schwab_marketdata_mcp.health
 | `MismatchingStateException ("CSRF Warning!")`                | `.env` 与 Portal 注册的 callback URL 不一致；详见 [`oauth-callback-mismatch.md`](oauth-callback-mismatch.md) |
 | 浏览器一直没自动打开                                          | OS 默认浏览器没设置；手工打开 stdout 上打印的 URL                                     |
 | 跑完后 `token.json` 没出现                                    | OAuth 在 callback 阶段失败；翻 stderr 找 `Schwab*Error`                              |
-| 端口 8182 偶尔会被 macOS Spotlight / Mail 等占用              | `kill <pid>` 或换端口；记得同步改 Portal 注册值                                       |
+| 端口 8182 偶尔会被 macOS Spotlight / Mail 等占用              | `stop <pid>`（or change port）；记得同步改 Portal 注册值                                       |
 
 ## 不要做的事
 
