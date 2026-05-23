@@ -7,16 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [0.2.1] - 2026-05-23
 
-- English mirror translation coverage upgraded from 25 / 65
-  (38%) to **65 / 65 (100%)**. The remaining 40 placeholder
-  scaffolds in `schwab-marketdata-ops-en/references/` (6 oauth,
-  4 integration, 3 operations, 19 troubleshooting, 8 top-level)
-  are now full English translations preserving heading structure,
-  code blocks, tables, and cross-links to the Chinese source.
-  Each translated file retains a `## Source` link back to the
-  matching `schwab-marketdata-ops/references/` file for ongoing
+### Changed
+- **English mirror reaches 100% translation coverage** (was 25/65 = 38%
+  in v0.2.0 → 65/65 = 100% now). All 40 placeholder scaffolds upgraded
+  to full translations across 4 reference categories:
+  - 19 troubleshooting references (auth / rate-limit / validation /
+    transient routing + per-symptom playbooks, 1,406 lines)
+  - 6 oauth references (overview / login_flow / manual_flow /
+    self-host-callback / callback-mismatch / token-lifecycle, 624 lines)
+  - 4 integration references (cli-jq-pipe / python-mcp-client /
+    typescript-mcp-client / rust-mcp-client, 754 lines)
+  - 3 operations references (multi-machine / observability-and-caching
+    / rate-limit-token-bucket, 381 lines)
+  - 8 top-level references (error-recovery / faq 35 Q&A / tos-snapshot /
+    credentials-rotate-runbook / rate-limits-and-paging + 3 legacy
+    redirectors, 620 lines)
+- README "Translation coverage" table updated from "25 complete + 40
+  scaffolded" to "65 complete (100%)".
+- Industry-standard terminology applied consistently:
+  `credential rotation`, `Cartesian product`, `rate limit / throttling`,
+  `time and sales`, `rotate-on-use`, etc. API field names, enum values,
+  JSON keys, command paths, and URLs preserved verbatim. Each EN file
+  retains a `## Source` link to its CN counterpart for ongoing
   cross-reference.
 
 ## [0.2.0] - 2026-05-23
@@ -91,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential rotation runbook explicitly disallows force-pushing main (Git
   Safety Protocol).
 
-[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.2.1
 [0.2.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.0
