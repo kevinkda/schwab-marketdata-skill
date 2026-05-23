@@ -33,6 +33,7 @@ If any of these fail, **stop** and fix before proceeding.
 
 > **First-time auth on a new machine** (interactive — do **not** run from an
 > agent without user consent):
+>
 > ```bash
 > gh auth login --hostname github.com --git-protocol https --web
 > ```
@@ -172,6 +173,7 @@ gh release list                           # confirms it appears
 ```
 
 Manually confirm on GitHub:
+
 - Tag `v0.1.0` is present.
 - Release notes render correctly.
 - Source tarballs (`.tar.gz`, `.zip`) are auto-attached by GitHub.

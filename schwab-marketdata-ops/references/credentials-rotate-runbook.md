@@ -2,7 +2,7 @@
 
 > **Note**: legacy repos using `master` as the default branch should
 > migrate to `main`; this runbook references only modern conventions.
-
+>
 > **Trigger** — any of:
 >
 > - `gitleaks` / `detect-secrets` flagged a real-looking secret in a commit.
