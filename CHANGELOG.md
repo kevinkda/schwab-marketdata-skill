@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-05-23
+
 ### Added
 
 - Two Cursor / Claude Code skills: `schwab-marketdata-ops` (single-tool MCP
@@ -19,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English mirror skills (`schwab-marketdata-ops-en` /
   `schwab-marketdata-workflows-en`): 25 fully-translated + 40 scaffolded
   placeholders.
-- Bilingual READMEs (English master + Chinese mirror via README_zh.md).
+- Bilingual READMEs (English primary + Chinese mirror via README_zh.md).
 - markdownlint-cli2 config for CJK-compatible linting; all 132 markdown files
   pass exit 0.
 - Compatibility matrix covering 5 clients (Cursor / Claude Code / Kiro CLI /
@@ -37,4 +39,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential rotation runbook explicitly disallows force-pushing main (Git
   Safety Protocol).
 
-[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/...HEAD
+[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.0
