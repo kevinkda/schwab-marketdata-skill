@@ -1,25 +1,29 @@
-# Troubleshooting — rate limit (top-level dispatcher)
+# Troubleshooting — `SchwabRateLimitError` (legacy redirect)
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Top-level entry point for SchwabRateLimitError and rate-limit warning triage.
+> This file is preserved for backward compatibility with old
+> references; the content has been reorganized into the
+> [`troubleshooting/`](troubleshooting/) subdirectory.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../schwab-marketdata-ops/references/troubleshooting-rate-limit.md`](../../schwab-marketdata-ops/references/troubleshooting-rate-limit.md).
 
-## 新位置
+## New locations
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-rate-limit.md) for full content._
+Split per symptom into individual files:
 
-## 入口
+| Symptom                              | Child file                                                                          |
+| ------------------------------------ | ----------------------------------------------------------------------------------- |
+| Schwab server-side 429               | [`troubleshooting/rate-limit-429.md`](troubleshooting/rate-limit-429.md)            |
+| Local token-bucket 0 slots           | [`troubleshooting/rate-limit-token-bucket-empty.md`](troubleshooting/rate-limit-token-bucket-empty.md) |
+| `rate_limit_warning` (call still succeeded) | [`troubleshooting/rate-limit-warning-stderr.md`](troubleshooting/rate-limit-warning-stderr.md) |
+| 429 missing `Retry-After` header (rare) | [`troubleshooting/rate-limit-no-retry-after.md`](troubleshooting/rate-limit-no-retry-after.md) |
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-rate-limit.md) for full content._
+## Entry point
+
+Main entry (routing table + decision flow):
+[`troubleshooting/rate-limit-overview.md`](troubleshooting/rate-limit-overview.md)
+
+token-bucket implementation deep dive (for tuning):
+[`operations/rate-limit-token-bucket.md`](operations/rate-limit-token-bucket.md)

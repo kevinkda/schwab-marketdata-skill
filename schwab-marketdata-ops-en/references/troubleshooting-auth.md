@@ -1,25 +1,31 @@
-# Troubleshooting — auth (top-level dispatcher)
+# Troubleshooting — `SchwabAuthError` (legacy redirect)
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Top-level entry point for SchwabAuthError triage. Routes to per-reason files under `troubleshooting/`.
+> This file is preserved for backward compatibility with old
+> references; the content has been reorganized into the
+> [`troubleshooting/`](troubleshooting/) subdirectory.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../schwab-marketdata-ops/references/troubleshooting-auth.md`](../../schwab-marketdata-ops/references/troubleshooting-auth.md).
 
-## 新位置
+## New locations
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-auth.md) for full content._
+Split per reason into individual files for precise routing:
 
-## 入口
+| reason                              | Child file                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| `refresh_token_expired_soon`        | [`troubleshooting/auth-refresh-expiring-soon.md`](troubleshooting/auth-refresh-expiring-soon.md) |
+| `refresh_token_expired`             | [`troubleshooting/auth-refresh-expired.md`](troubleshooting/auth-refresh-expired.md)             |
+| `token_not_initialized`             | [`troubleshooting/auth-token-not-initialized.md`](troubleshooting/auth-token-not-initialized.md) |
+| `token_corrupted`                   | [`troubleshooting/auth-token-corrupted.md`](troubleshooting/auth-token-corrupted.md)             |
+| `insecure_token_perms`              | [`troubleshooting/auth-insecure-perms.md`](troubleshooting/auth-insecure-perms.md)               |
+| `callback_url_mismatch`             | [`troubleshooting/auth-callback-url-mismatch.md`](troubleshooting/auth-callback-url-mismatch.md) |
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-auth.md) for full content._
+## Entry point
+
+Main entry (routing table + decision flow):
+[`troubleshooting/auth-overview.md`](troubleshooting/auth-overview.md)
+
+TokenState 4-state explainer:
+[`troubleshooting/auth-token-states.md`](troubleshooting/auth-token-states.md)

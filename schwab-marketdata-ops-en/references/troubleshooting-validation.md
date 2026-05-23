@@ -1,25 +1,29 @@
-# Troubleshooting — validation (top-level dispatcher)
+# Troubleshooting — `SchwabValidationError` (legacy redirect)
 
-> **Status: placeholder.** This English stub is a skeleton mirror of
-> the Chinese source, kept in sync for structural parity (heading
-> count, link graph) but with bodies still pending high-quality
-> translation. See the linked Chinese version below for the full
-> content; please open an issue or PR to upgrade this file to a
-> complete translation.
-
-## Abstract
-
-Top-level entry point for SchwabValidationError triage. Routes to per-field files under `troubleshooting/`.
+> This file is preserved for backward compatibility with old
+> references; the content has been reorganized into the
+> [`troubleshooting/`](troubleshooting/) subdirectory.
 
 ## Source
 
-For full content, see the Chinese version:
+For the original Chinese version, see
 [`../../schwab-marketdata-ops/references/troubleshooting-validation.md`](../../schwab-marketdata-ops/references/troubleshooting-validation.md).
 
-## 新位置
+## New locations
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-validation.md) for full content._
+Split by `field` into individual files:
 
-## 入口
+| Source                            | Child file                                                                          |
+| --------------------------------- | ----------------------------------------------------------------------------------- |
+| Symbol regex mismatch             | [`troubleshooting/validation-symbol.md`](troubleshooting/validation-symbol.md)      |
+| Price history Cartesian product invalid | [`troubleshooting/validation-pricehistory-cartesian.md`](troubleshooting/validation-pricehistory-cartesian.md) |
+| `get_quotes` exceeded 50 symbols   | [`troubleshooting/validation-batch-50.md`](troubleshooting/validation-batch-50.md)   |
+| OSI option symbol format error    | [`troubleshooting/validation-osi-format.md`](troubleshooting/validation-osi-format.md) |
 
-_Translation in progress — see the [Chinese version](../../schwab-marketdata-ops/references/troubleshooting-validation.md) for full content._
+## Entry point
+
+Main entry (routing table + decision flow):
+[`troubleshooting/validation-overview.md`](troubleshooting/validation-overview.md)
+
+OSI encoding deep dive:
+[`concepts/osi-option-symbol.md`](concepts/osi-option-symbol.md)
