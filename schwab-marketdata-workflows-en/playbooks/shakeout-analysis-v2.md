@@ -16,7 +16,7 @@
 
 **Bull Market Shakeout Pattern**:
 
-```
+```text
 Phase 1: new high → hits resistance
 Phase 2: 2-4 day pullback (-0.5% to -1.5%)
 Phase 3: RSI drops from 75+ to 65-70 ("repair" but still elevated)
@@ -39,6 +39,7 @@ Phase 6: next leg up
 | 8 | Open P&L                | < +3%                           | ≥ +3% (consider take-profit; orthogonal to reversal) |
 
 **Decision matrix**:
+
 - Items 1–7 **all on the shakeout column** + item 8 = "no" → **HOLD** (this is a shakeout).
 - Items 1–7 with **≥ 3 hits on the reversal column** → **REVIEW / TRIM**.
 - Item 8 = "yes" → **consider take-profit** (independent of reversal).
@@ -84,6 +85,7 @@ get_price_history(
 ```
 
 > **Cache semantics** (introduced in v0.2 sprint):
+>
 > - If `_cache_status == "hit"`: candles came from DuckDB; zero Schwab quota used.
 > - If `_cache_status == "miss"`: this call wrote to cache; the next request
 >   in the same window short-circuits.
@@ -166,14 +168,31 @@ git commit -m "data(schwab): shakeout-v2 analysis $(date -u +%Y-%m-%d)"
 
 Verify each box by running its command and inspecting the output:
 
-- [ ] **Commit created**: `git -C ${target_repo} log -1 --format="%H %s"` shows the latest commit hash + `data(schwab):` prefix
-- [ ] **Today's research file exists**: `ls ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md`
-- [ ] **Only research/ and trackers/voo-qqq-tracker.md changed**: every path in `git -C ${target_repo} diff --stat HEAD~1` is under one of those two
-- [ ] **Health probe still valid**: `uv run python -m schwab_marketdata_mcp.health` exit code = 0
-- [ ] **Cache hit rate ≥ 30%**: call `get_cache_stats()` once more at the end; `hit_rate_24h` ≥ 0.3 (proves the cache actually relieved Schwab)
-- [ ] **gitleaks passes**: `pre-commit run gitleaks --files <changed_files>` exit code = 0
-- [ ] **Report has all 7 sections**: `grep -c '^##' ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md` ≥ 7
-- [ ] **No verbatim copy from §10**: spot-check one §10 paragraph; `grep -F` should not find a verbatim match in the new report (confirms AI generation, not transcription)
+- [ ] **Commit created**: `git -C ${target_repo} log -1 --format="%H %s"` shows
+      the latest commit hash + `data(schwab):` prefix
+- [ ] **Today's research file exists**:
+      `ls ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md`
+- [ ] **Only research/ and trackers/voo-qqq-tracker.md changed**: every path in
+      `git -C ${target_repo} diff --stat HEAD~1` is under one of those two
+- [ ] **Health probe still valid**: `uv run python -m schwab_marketdata_mcp.health`
+      exit code = 0
+- [ ] **Cache hit rate ≥ 30%**: call `get_cache_stats()` once more at the end;
+      `hit_rate_24h` ≥ 0.3 (proves the cache actually relieved Schwab)
+- [ ] **gitleaks passes**: `pre-commit run gitleaks --files <changed_files>` exit
+      code = 0
+- [ ] **Report has all 7 sections**:
+      `grep -c '^##' ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md` ≥ 7
+- [ ] **No verbatim copy from §10**: spot-check one §10 paragraph; `grep -F`
+      should not find a verbatim match in the new report (confirms AI generation,
+      not transcription)
+- [ ] **`cache.duckdb` row count grew this run (v0.3 sprint Sprint A AC #9)**:
+      call `get_cache_stats()` once during §Pre-flight Step 3 and once at Step 6;
+      compare `total_rows` (or `price_history_cache_rows`): the scan must write
+      at least one new candle, so `total_rows_after - total_rows_before ≥ 1`
+      (unless every symbol was a full cache hit, in which case every
+      `_cache_status` should be `"hit"`).
+      **If rows did not grow AND any `_cache_status == "miss"` → cache write
+      silently failed; STOP and report.**
 
 ## Rollback
 
@@ -199,3 +218,4 @@ git restore trackers/voo-qqq-tracker.md  # only if Step 6 modified it
 | `research/shakeout-YYYY-MM-DD.md` already exists for today  | Ask the user whether to **overwrite** today's snapshot; default = skip and tell the user.                           |
 | VIX data unavailable                                       | Mark signal #7 `N/A`; switch the decision matrix to a 7-item weighting. **Never fabricate a VIX value.**            |
 | Step 4 computation fails (e.g. not enough candles for MA20) | Honest "not enough data" in the report; mark that signal `N/A`. **Never zero-fill or forward-fill.**                |
+| **DuckDB lock conflict (another process is using `cache.duckdb`)** | **(v0.3 sprint AC #10)** Wait 5 s and retry once; if still locked → set `SCHWAB_CACHE_BYPASS=1` for one run (live API path) and note `cache locked, bypassed` in the report frontmatter. **Never force-delete the `.lock` file** — that will break concurrent refresh-token rotation. |

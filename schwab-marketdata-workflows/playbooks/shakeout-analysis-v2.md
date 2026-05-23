@@ -15,7 +15,7 @@
 
 **Bull Market Shakeout Pattern**（牛市洗盘-突破循环）：
 
-```
+```text
 阶段 1：创新高 → 触及阻力
 阶段 2：小幅回落 2-4 天（-0.5% 到 -1.5%）
 阶段 3：RSI 从 75+ 降到 65-70（"修复"但仍在高位）
@@ -38,6 +38,7 @@
 | 8 | 浮盈                    | < +3%                        | ≥ +3%（考虑止盈，与反转无关）     |
 
 **决策矩阵**：
+
 - 1-7 项**全部命中 shakeout 列** + 8 项答"否" → **HOLD**（这是洗盘）
 - 1-7 项**有 ≥ 3 项命中反转列** → **REVIEW / 减仓**
 - 第 8 项命中 → **可考虑止盈**（与反转无关，独立决策）
@@ -81,6 +82,7 @@ get_price_history(
 ```
 
 > **缓存语义**（v0.2 sprint 引入的 DuckDB 层）：
+>
 > - 若 `_cache_status == "hit"`：本次 candle 直接来自缓存，无 Schwab 配额消耗。
 > - 若 `_cache_status == "miss"`：本次为缓存写入；下次同一窗口直接命中。
 > - 历史 candle（早于 1 小时）**永久缓存**，无需重新拉取。
@@ -154,14 +156,23 @@ git commit -m "data(schwab): shakeout-v2 analysis $(date -u +%Y-%m-%d)"
 
 完成后逐项验证（每项跑命令并确认输出，再勾选）：
 
-- [ ] **commit 已创建**：`git -C ${target_repo} log -1 --format="%H %s"` 输出最新 commit hash + `data(schwab):` 前缀的 message
+- [ ] **commit 已创建**：`git -C ${target_repo} log -1 --format="%H %s"` 输出最新 commit hash
+      + `data(schwab):` 前缀的 message
 - [ ] **research/ 下有当日新文件**：`ls ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md`
-- [ ] **仅 research/ 与 trackers/voo-qqq-tracker.md 被改动**：`git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都在这两个目录下
+- [ ] **仅 research/ 与 trackers/voo-qqq-tracker.md 被改动**：
+      `git -C ${target_repo} diff --stat HEAD~1` 列出的所有文件路径都在这两个目录下
 - [ ] **health_check 仍 valid**：`uv run python -m schwab_marketdata_mcp.health` exit code = 0
-- [ ] **缓存命中率 ≥ 30%**：本次 playbook 末尾再调一次 `get_cache_stats()`，`hit_rate_24h` 至少 0.3（说明缓存确实减压了 Schwab）
+- [ ] **缓存命中率 ≥ 30%**：本次 playbook 末尾再调一次 `get_cache_stats()`，
+      `hit_rate_24h` 至少 0.3（说明缓存确实减压了 Schwab）
 - [ ] **gitleaks pass**：`pre-commit run gitleaks --files <changed_files>` exit code = 0
 - [ ] **报告含全部 7 段**：`grep -c '^##' ${target_repo}/research/shakeout-$(date +%Y-%m-%d).md` ≥ 7
-- [ ] **无来自 §10 的逐字复制**：随机抽 1 段 §10 原文，`grep -F` 在新报告里**不应**出现完整复制（确保是 AI 生成而非搬运）
+- [ ] **无来自 §10 的逐字复制**：随机抽 1 段 §10 原文，`grep -F` 在新报告里**不应**出现完整复制
+      （确保是 AI 生成而非搬运）
+- [ ] **`cache.duckdb` 行数本次有变化（v0.3 sprint Sprint A AC #9）**：在 §Pre-flight Step 3 与
+      Step 6 各调一次 `get_cache_stats()`，对比 `total_rows`（或 `price_history_cache_rows`）
+      字段：本次扫描必然写入新 candle，`total_rows_after - total_rows_before ≥ 1`（除非
+      所有 symbol 都全部缓存命中，那种情况下 `_cache_status` 应全部为 "hit"）。
+      **若 rows 0 增长且任一 `_cache_status == "miss"` → 缓存写入静默失败，STOP 并报告。**
 
 ## Rollback
 
@@ -187,3 +198,4 @@ git restore trackers/voo-qqq-tracker.md  # 仅当 Step 6 改过
 | 同一日已经存在 `research/shakeout-YYYY-MM-DD.md`     | 询问用户是否要 **覆盖** 当日 snapshot；默认 skip 并告诉用户。                                   |
 | VIX 数据不可得                                     | 信号 #7 标 `N/A`，决策矩阵改用 7 项加权。**不要伪造 VIX 值**。                                  |
 | Step 4 计算异常（如 candle 数据不足以算 MA20）      | 在报告里如实标"数据不足"；信号该列标 `N/A`。**不要补 0 或前向填充**。                            |
+| **DuckDB lock 冲突（另一进程在用 `cache.duckdb`）** | **(v0.3 sprint AC #10)** 等 5 s 重试一次；仍冲突 → 设 `SCHWAB_CACHE_BYPASS=1` 跑一遍走实时路径，并在报告 frontmatter 注明 "cache locked, bypassed"。**绝不强删 `.lock` 文件**——会破坏并发的 refresh-token 轮换。 |
