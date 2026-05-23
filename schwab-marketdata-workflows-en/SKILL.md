@@ -1,6 +1,6 @@
 ---
 name: schwab-marketdata-workflows-en
-compatible_mcp_version: ">=0.1,<0.2"
+compatible_mcp_version: ">=0.2,<0.3"
 language_directive: "Always respond to the user in English."
 required_workspace: "/opt/workspace/code/kevinkda/stock-personal"
 description: |

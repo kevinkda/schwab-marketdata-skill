@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-23
+
+### Added
+
+- **`shakeout-analysis-v2.md` playbook** (Chinese + English mirror,
+  189 / 201 lines): 6-step end-to-end workflow leveraging the
+  companion mcp v0.2.0 DuckDB cache. Covers VOO/QQQ/SPY default
+  scan, 8-signal local detection per voo-qqq-tracker.md §10
+  methodology, and 7-section AI-generated `research/shakeout-
+  YYYY-MM-DD.md` output. Includes pre-flight cache hit-rate gate
+  (≥30%), acceptance criteria (8 items), rollback procedure, and
+  failure-mode table (9 rows).
+- workflows SKILL.md tables of playbooks now list shakeout-analysis-v2
+  in both zh and en mirrors.
+
+### Compatibility
+
+- Requires `schwab-marketdata-mcp >=0.2,<0.3` (DuckDB cache + 14
+  tools). Falls back to v0.1.1 by setting `SCHWAB_CACHE_ENABLED=false`,
+  but pre-flight cache hit-rate gate will fail.
+
 ## [0.1.1] - 2026-05-23
 
 ### Added
@@ -58,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential rotation runbook explicitly disallows force-pushing main (Git
   Safety Protocol).
 
-[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.0
