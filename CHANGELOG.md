@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-23
+
+### Added
+
+- **`summary-md-refresh` playbook v2** (zh + en, 403 lines added,
+  129 removed): rewrite leveraging schwab-marketdata-mcp v0.3.0
+  health_check overall_status + cache hourly breakdown + 6-step
+  workflow targeting stock-personal/summary.md weekly refresh.
+- **`shakeout-analysis-v2` playbook enhancements**: AC #9 cache
+  rows-changed assertion + fail-mode #10 DuckDB lock conflict
+  (zh + en mirrors).
+- **Dependabot config** (`.github/dependabot.yml`): weekly GitHub
+  Actions dependency updates only (no Python deps in skill repo).
+- **README badges + v0.3 sprint navigation** (English + Chinese
+  mirrors).
+
+### Changed
+
+- All 4 SKILL.md frontmatters bump `compatible_mcp_version` from
+  `>=0.2,<0.3` to `>=0.3,<0.4`, reflecting reliance on the v0.3.0
+  health_check state machine and hourly cache breakdown for playbook
+  pre-flight gates.
+
+### Compatibility
+
+- Requires schwab-marketdata-mcp >=0.3,<0.4 (verified against v0.3.0).
+- Falling back to v0.2.x will fail Activation handshake.
+
 ## [0.2.1] - 2026-05-23
 
 ### Changed
@@ -106,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential rotation runbook explicitly disallows force-pushing main (Git
   Safety Protocol).
 
-[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.3.0
 [0.2.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.2.1
 [0.2.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.1

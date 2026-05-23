@@ -1,6 +1,6 @@
 ---
 name: schwab-marketdata-ops-en
-compatible_mcp_version: ">=0.2,<0.3"
+compatible_mcp_version: ">=0.3,<0.4"
 language_directive: "Always respond to the user in English."
 auto_activate: false
 activation_handshake: "get_server_info -> health_check"
