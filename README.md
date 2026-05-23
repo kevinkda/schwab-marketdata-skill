@@ -1,39 +1,121 @@
 # schwab-marketdata-skill
 
+[English](./README.md) | [简体中文](./README_zh.md)
+
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Companion](https://img.shields.io/badge/companion-schwab--marketdata--mcp-blue.svg)](../schwab-marketdata-mcp)
+
 Two complementary Cursor / Claude **Skills** that wrap the
-[`schwab-marketdata-mcp`](https://github.com/kevinkda/schwab-marketdata-mcp)
-server.  Both skills are **read-only documentation packages**; the actual
-tool calls are made by the MCP server.
+[`schwab-marketdata-mcp`](../schwab-marketdata-mcp) server. Both skills are
+**read-only documentation packages**; the actual tool calls are made by the
+MCP server.
 
-## Languages / 语言
+---
 
-This repository ships each skill in two parallel language variants. They
-share the same MCP server, the same activation handshake, and the same
-behavior — only the prose language and frontmatter `language_directive`
-differ.
+## Overview
 
-| Skill (Chinese, primary) | Skill (English mirror) | When to use |
-| ------------------------ | ---------------------- | ----------- |
-| `schwab-marketdata-ops` | [`schwab-marketdata-ops-en`](schwab-marketdata-ops-en/SKILL.md) | Single tool calls, OAuth / 401 / 429 troubleshooting, exact tool schema lookup. |
-| `schwab-marketdata-workflows` | [`schwab-marketdata-workflows-en`](schwab-marketdata-workflows-en/SKILL.md) | Multi-step playbooks that update markdown in `kevinkda/stock-personal` (private). |
+This repository ships two skills, each in two parallel language variants
+(Chinese primary + English mirror), so an agent can be steered to whichever
+prose language fits the user's request:
 
-> **English mirror coverage**: the two `SKILL.md` files, all 7 Quick
-> Start steps, all 8 Tools references, all 4 Concepts files, and all 4
-> Workflow playbooks are **fully translated**. The remaining files
-> (OAuth × 6, Integration × 4, Operations × 3, Troubleshooting × 17,
-> top-level × 5 = 35 files) are **structural placeholders** — each one
-> carries the H1 title, an English abstract, and a link back to the
-> Chinese source for full content. Contributions to upgrade any
-> placeholder to a complete translation are welcome.
+- **`schwab-marketdata-ops`** — single-tool reference. Use it for "give me a
+  quote", "fetch this option chain", or "explain this 401 / 429".
+- **`schwab-marketdata-workflows`** — multi-step playbooks. Use it for
+  "refresh `summary.md`", "update `voo-qqq-tracker.md`", or "regenerate
+  `watchlist.md`".
 
-| Skill                           | When to use                                                                          |
-| ------------------------------- | ------------------------------------------------------------------------------------ |
-| `schwab-marketdata-ops`         | Single tool calls, OAuth / 401 / 429 troubleshooting, exact tool schema lookup.      |
-| `schwab-marketdata-workflows`   | Multi-step playbooks that update markdown in `kevinkda/stock-personal` (private).    |
+Both skills:
+
+- Share the same MCP server (`schwab-marketdata-mcp`).
+- Share the same activation handshake (`get_server_info` → `health_check`).
+- Share the same governance rules (private-repo-only writes; no Trader API
+  calls; no token leakage in logs).
+- Differ only in prose language and the `language_directive` frontmatter
+  field.
+
+---
+
+## Skill variants
+
+| Skill | Language | When to use |
+| ----- | -------- | ----------- |
+| [`schwab-marketdata-ops`](schwab-marketdata-ops/SKILL.md) | 简体中文 (primary) | Single tool calls, OAuth / 401 / 429 troubleshooting, exact tool schema lookup. |
+| [`schwab-marketdata-ops-en`](schwab-marketdata-ops-en/SKILL.md) | English (mirror) | Same scope as `schwab-marketdata-ops`, English prose. |
+| [`schwab-marketdata-workflows`](schwab-marketdata-workflows/SKILL.md) | 简体中文 (primary) | Multi-step playbooks that update markdown in `kevinkda/stock-personal` (private). |
+| [`schwab-marketdata-workflows-en`](schwab-marketdata-workflows-en/SKILL.md) | English (mirror) | Same scope as `schwab-marketdata-workflows`, English prose. |
 
 > Use **ops** for "I just need a quote / option chain / a debug answer."
 > Use **workflows** for "refresh `summary.md` / `voo-qqq-tracker.md` /
 > `watchlist.md`."
+
+---
+
+## Translation coverage
+
+The English mirror is a structural translation of the Chinese primary —
+some files are fully translated, others are placeholders that link back to
+the Chinese source.
+
+| Category | Total files | Fully translated | Placeholders |
+| -------- | ----------- | ---------------- | ------------ |
+| `SKILL.md` (top-level)         | 2  | 2  | 0  |
+| Quick Start                    | 7  | 7  | 0  |
+| Tools reference                | 8  | 8  | 0  |
+| Concepts                       | 4  | 4  | 0  |
+| Workflow playbooks             | 4  | 4  | 0  |
+| OAuth                          | 6  | 0  | 6  |
+| Integration                    | 4  | 0  | 4  |
+| Operations                     | 3  | 0  | 3  |
+| Troubleshooting                | 17 | 0  | 17 |
+| Top-level (other)              | 5  | 0  | 5  |
+| **Total**                      | **60** | **25** | **35** |
+
+Placeholder files carry the H1 title, a one-paragraph English abstract, and
+a link back to the Chinese source for full content. Contributions to
+upgrade any placeholder to a complete translation are welcome — see the
+existing `*-en` files for the expected style.
+
+---
+
+## Installation
+
+The exact mechanism depends on your client version. Typical layouts:
+
+### Cursor
+
+Cursor discovers user-level skills by scanning `~/.cursor/skills/` and any
+directory the user adds via Settings → Skills. Symlink (or copy) the
+folders you want — pick the Chinese primary, the English mirror, or both
+(Cursor accepts them as distinct skills because the directory names
+differ):
+
+```bash
+# Chinese primary (default for this repo)
+ln -s "$(pwd)/schwab-marketdata-ops"          ~/.cursor/skills/schwab-marketdata-ops
+ln -s "$(pwd)/schwab-marketdata-workflows"    ~/.cursor/skills/schwab-marketdata-workflows
+
+# English mirror (optional; install in addition or instead)
+ln -s "$(pwd)/schwab-marketdata-ops-en"       ~/.cursor/skills/schwab-marketdata-ops-en
+ln -s "$(pwd)/schwab-marketdata-workflows-en" ~/.cursor/skills/schwab-marketdata-workflows-en
+```
+
+### Claude Code
+
+Claude Code picks up `~/.claude/skills/<name>/SKILL.md`. The same symlink
+approach works:
+
+```bash
+ln -s "$(pwd)/schwab-marketdata-ops"          ~/.claude/skills/schwab-marketdata-ops
+ln -s "$(pwd)/schwab-marketdata-workflows"    ~/.claude/skills/schwab-marketdata-workflows
+```
+
+### Other clients
+
+For Kiro CLI, Cline, Roo Code, and other skills-compatible agents, see
+the [Compatibility matrix](#compatibility-matrix) below.
+
+> **Prerequisite**: the companion MCP server must already be registered.
+> See [`schwab-marketdata-mcp/docs/REGISTER.md`](../schwab-marketdata-mcp/docs/REGISTER.md).
 
 ---
 
@@ -43,96 +125,82 @@ differ.
 | --------------- | --------------------- |
 | v0.1.x          | `schwab-marketdata-mcp >=0.1, <0.2` |
 
-The `compatible_mcp_version` range is encoded in each skill's
-`SKILL.md` frontmatter.  The skill body **must** call `get_server_info`
-first and refuse to continue if the running server's `server_version`
-does not satisfy the range.
-
----
-
-## Adding the skills to Cursor / Claude
-
-The exact mechanism depends on your client version.  Typical layouts:
-
-1. **Cursor** discovers user-level skills by scanning `~/.cursor/skills/`
-   and any directory the user adds via Settings → Skills.  Symlink (or
-   copy) the folders you want — pick the Chinese primary, the English
-   mirror, or both (Cursor accepts them as distinct skills because the
-   directory names differ):
-
-   ```bash
-   # Chinese primary (default for this repo)
-   ln -s "$(pwd)/schwab-marketdata-ops"          ~/.cursor/skills/schwab-marketdata-ops
-   ln -s "$(pwd)/schwab-marketdata-workflows"    ~/.cursor/skills/schwab-marketdata-workflows
-
-   # English mirror (optional; install in addition or instead)
-   ln -s "$(pwd)/schwab-marketdata-ops-en"       ~/.cursor/skills/schwab-marketdata-ops-en
-   ln -s "$(pwd)/schwab-marketdata-workflows-en" ~/.cursor/skills/schwab-marketdata-workflows-en
-   ```
-
-2. **Claude Code** picks up `~/.claude/skills/<name>/SKILL.md`.  The same
-   symlink approach works.
-
-3. The accompanying MCP server must already be registered (see the
-   server repo's README — `~/.cursor/mcp.json`).
+The `compatible_mcp_version` range is encoded in each skill's `SKILL.md`
+frontmatter. The skill body **must** call `get_server_info` first and refuse
+to continue if the running server's `server_version` does not satisfy the
+range.
 
 ---
 
 ## Compatibility matrix
 
-不同 agent 客户端对 skill frontmatter 字段的支持情况。下表是经过验证
-的兼容情况：**5 客户端 × 8 字段**。
+Verified support for skill frontmatter fields across agent clients:
+**5 clients × 8 fields**.
 
-> **关键约定**：所有非标准 frontmatter 字段**只是文档化约束**——真正
-> 的执行靠 `SKILL.md` body 的运行时检查（`get_server_info` 版本握手 +
-> `cwd` 校验 + 中文回复指令 + activation handshake）。即便客户端不识别
-> frontmatter 字段本身，skill 行为仍正确。
+> **Key contract**: every non-standard frontmatter field is **documentation
+> only** — actual enforcement happens in `SKILL.md` body via runtime checks
+> (`get_server_info` version handshake, `cwd` validation, response-language
+> directive, activation handshake). Even if a client does not parse the
+> frontmatter field itself, the skill behaves correctly.
 
-图例：✅ 完整支持 / ⚠️ 部分支持或视实现而定 / ❌ 不支持
+Legend: ✅ full support / ⚠️ partial or implementation-defined / ❌ not supported
 
-| 客户端 | 已测版本 | `compatible_mcp_version` | `required_workspace` | `language_directive` | `auto_activate` | `activation_handshake` | `compatibility` | `dependencies` | `governance` |
-| ------ | -------- | ------------------------ | -------------------- | -------------------- | --------------- | ---------------------- | --------------- | -------------- | ------------ |
-| **Cursor IDE** | ≥ 0.45 | ✅ body 显式校验 | ✅ agent pre-flight 检查 cwd | ✅ 作为 system prompt 注入 | ⚠️ 字段被忽略，body 行为不变 | ✅ body 显式调用 2 个 tool | ✅ 文档化 | ⚠️ 文档化 + body 用 `get_server_info` 校验 | ✅ 文档化 |
-| **Claude Code** | ≥ 1.0 | ✅ 同上 | ✅ 同上 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 |
-| **Kiro CLI** | ≥ 0.1 | ✅ body 显式校验 | ⚠️ 视 host 决定 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
-| **Cline** | ≥ 3.x | ✅ body 显式校验（通过 MCP 协议握手） | ⚠️ 部分支持 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
-| **Roo Code** | latest | ✅ body 显式校验 | ⚠️ 部分支持 | ✅ 同上 | ⚠️ 同上 | ✅ 同上 | ✅ 文档化 | ⚠️ 同上 | ✅ 文档化 |
-| 其他 skills-compatible agents | — | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 | ⚠️ 视实现而定 |
+| Client | Tested version | `compatible_mcp_version` | `required_workspace` | `language_directive` | `auto_activate` | `activation_handshake` | `compatibility` | `dependencies` | `governance` |
+| ------ | -------------- | ------------------------ | -------------------- | -------------------- | --------------- | ---------------------- | --------------- | -------------- | ------------ |
+| **Cursor IDE** | ≥ 0.45 | ✅ explicit body check | ✅ agent pre-flight `cwd` check | ✅ injected as system prompt | ⚠️ field ignored, body behavior unchanged | ✅ body explicitly calls 2 tools | ✅ documented | ⚠️ documented + body checks via `get_server_info` | ✅ documented |
+| **Claude Code** | ≥ 1.0 | ✅ same as above | ✅ same | ✅ same | ⚠️ same | ✅ same | ✅ same | ⚠️ same | ✅ same |
+| **Kiro CLI** | ≥ 0.1 | ✅ explicit body check | ⚠️ host-dependent | ✅ same | ⚠️ same | ✅ same | ✅ documented | ⚠️ same | ✅ documented |
+| **Cline** | ≥ 3.x | ✅ explicit body check (via MCP handshake) | ⚠️ partial | ✅ same | ⚠️ same | ✅ same | ✅ documented | ⚠️ same | ✅ documented |
+| **Roo Code** | latest | ✅ explicit body check | ⚠️ partial | ✅ same | ⚠️ same | ✅ same | ✅ documented | ⚠️ same | ✅ documented |
+| Other skills-compatible agents | — | ⚠️ implementation-defined | ⚠️ same | ⚠️ same | ⚠️ same | ⚠️ same | ⚠️ same | ⚠️ same | ⚠️ same |
 
-### 字段语义速查
+### Field semantics
 
-| 字段 | 说明 |
-| ---- | ---- |
-| `compatible_mcp_version` | semver-like 范围，约束 skill 适配的 server 版本（`>=0.1,<0.2`）；激活时 agent 调 `get_server_info` 校验 |
-| `required_workspace` | 仅 `schwab-marketdata-workflows` 有；约束写入数据所在的 cwd 子树（`/opt/workspace/code/kevinkda/stock-personal`） |
-| `language_directive` | 强制 agent 用某种语言回复（本项目要求 Simplified Chinese） |
-| `auto_activate` | 是否自动激活；本 skill 设为 `false`（agent 应根据用户意图按需激活） |
-| `activation_handshake` | 描述激活时必经的 tool 调用顺序（`get_server_info -> health_check`） |
-| `compatibility` | 列出 skill 已验证兼容的客户端（自由格式字符串） |
-| `dependencies` | 声明 skill 依赖的 MCP server / 外部 runtime（`uv` / `python>=3.10` 等） |
-| `governance` | 声明数据分类、写入约束、Git Safety Protocol（如禁止 force-push 主分支） |
+| Field | Meaning |
+| ----- | ------- |
+| `compatible_mcp_version` | Semver-like range constraining the server version this skill supports (e.g. `>=0.1,<0.2`). Validated at activation by calling `get_server_info`. |
+| `required_workspace` | Only set on `schwab-marketdata-workflows`; constrains the `cwd` subtree where data may be written (`/opt/workspace/code/kevinkda/stock-personal`). |
+| `language_directive` | Forces the agent to respond in a specific language. This project mandates Simplified Chinese for the primary skills. |
+| `auto_activate` | Whether the agent activates the skill automatically. Always `false` here — the agent must activate based on user intent. |
+| `activation_handshake` | The mandatory tool call sequence on activation (`get_server_info` → `health_check`). |
+| `compatibility` | Free-form string listing clients the skill has been verified against. |
+| `dependencies` | Declares MCP server / external runtime dependencies (`uv`, `python>=3.10`, etc.). |
+| `governance` | Declares data classification, write constraints, and Git Safety Protocol (e.g. no force-push to `main`). |
 
-### 注册路径
+### Recommended registration paths
 
-| 客户端 | 推荐注册路径 |
-| ------ | ------------ |
-| Cursor | `~/.cursor/skills/<name>` 软链 |
-| Claude Code | `~/.claude/skills/<name>` 软链 |
-| Kiro CLI | `~/.kiro/skills/<name>`（视版本而定） |
-| Cline | 通过 MCP 协议向 IDE 注册（IDE 设置内） |
-| Roo Code | 通过 MCP 协议（IDE 设置内） |
+| Client      | Recommended path |
+| ----------- | ---------------- |
+| Cursor      | `~/.cursor/skills/<name>` symlink |
+| Claude Code | `~/.claude/skills/<name>` symlink |
+| Kiro CLI    | `~/.kiro/skills/<name>` (version-dependent) |
+| Cline       | Registered via MCP protocol (IDE settings) |
+| Roo Code    | Registered via MCP protocol (IDE settings) |
+
+---
 
 ## Authoring conventions
 
-- **Both skills respond in 简体中文** — see the `language_directive`
-  field in each `SKILL.md` frontmatter.
-- Tool inputs use the schwab-py **enum names** (e.g. `"VOLUME"`,
-  `"NASDAQ"`), not the wire values (`"$DJI"`, `"day"`).  The MCP server
-  performs the translation.
+- **Chinese primary skills respond in 简体中文** — see the
+  `language_directive` field in each `SKILL.md` frontmatter. The
+  `*-en` mirrors respond in English.
+- Tool inputs use the schwab-py **enum names** (e.g. `"VOLUME"`, `"NASDAQ"`),
+  not the wire values (`"$DJI"`, `"day"`). The MCP server performs the
+  translation.
 - Every workflow playbook **must** verify
   `gh repo view kevinkda/stock-personal --json isPrivate` before writing.
   Schwab Market Data is non-redistributable; private repos are a
   contractual requirement.
+
+---
+
+## Companion project
+
+- [`schwab-marketdata-mcp`](../schwab-marketdata-mcp) — the MCP server these
+  skills wrap. Owns OAuth, rate limiting, retries, token rotation, and the
+  12-tool surface.
+
+---
 
 ## License
 
