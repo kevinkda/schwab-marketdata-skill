@@ -317,3 +317,36 @@ released.
   matching EN edit (or a clearly tracked follow-up).
 - Consider automating Steps 3.4–3.6 with a `scripts/release.sh` once the
   process has run cleanly two or three times manually.
+
+---
+
+## 9. Repository metadata
+
+After release, update GitHub repo description and topics via `gh`:
+
+```bash
+gh repo edit kevinkda/schwab-marketdata-skill \
+  --description "Cursor / Claude Code skill pack for schwab-marketdata-mcp (60+ references, 4 playbooks, EN+zh-CN)." \
+  --add-topic mcp \
+  --add-topic schwab \
+  --add-topic cursor-skill \
+  --add-topic claude-skill \
+  --add-topic finance
+```
+
+For the companion MCP server repo:
+
+```bash
+gh repo edit kevinkda/schwab-marketdata-mcp \
+  --description "Read-only MCP server for Charles Schwab Market Data Production API (12 tools, 274 tests, OWASP-tested)." \
+  --add-topic mcp \
+  --add-topic schwab \
+  --add-topic market-data \
+  --add-topic finance \
+  --add-topic python \
+  --add-topic cursor \
+  --add-topic claude
+```
+
+> Run these once after the first release; topics persist across future
+> releases.
