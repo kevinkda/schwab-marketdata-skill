@@ -12,9 +12,9 @@
 > `summary-md-refresh` playbook v2（缓存感知，仅刷新单一 weekly snapshot
 > 段，不覆盖用户手写正文）。相关文件：
 >
-> - [`schwab-marketdata-workflows/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows/playbooks/summary-md-refresh.md)（中文）
-> - [`schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md)（英文镜像）
-> - [`schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md`](./schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md) ——
+> - `schwab-marketdata-workflows/playbooks/summary-md-refresh.md`（中文）
+> - `schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md`（英文镜像）
+> - `schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md` ——
 >   Shakeout v2（DuckDB 缓存 + 8 信号扫描）。
 
 两个相互配套的 Cursor / Claude **Skill**，封装

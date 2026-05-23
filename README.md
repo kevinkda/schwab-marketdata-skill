@@ -13,9 +13,9 @@
 > single weekly snapshot section that does not overwrite hand-written
 > narrative).  See:
 >
-> - [`schwab-marketdata-workflows/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows/playbooks/summary-md-refresh.md) (zh)
-> - [`schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md`](./schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md) (en)
-> - [`schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md`](./schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md)
+> - `schwab-marketdata-workflows/playbooks/summary-md-refresh.md` (zh)
+> - `schwab-marketdata-workflows-en/playbooks/summary-md-refresh.md` (en)
+> - `schwab-marketdata-workflows/playbooks/shakeout-analysis-v2.md`
 >   (zh) — Shakeout v2 with DuckDB cache + 8-signal scan.
 
 Two complementary Cursor / Claude **Skills** that wrap the

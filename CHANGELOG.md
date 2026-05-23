@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1] - 2026-05-23
 
 ### Changed
+
 - **English mirror reaches 100% translation coverage** (was 25/65 = 38%
   in v0.2.0 → 65/65 = 100% now). All 40 placeholder scaffolds upgraded
   to full translations across 4 reference categories:
