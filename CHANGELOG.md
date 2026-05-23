@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-23
+
+### Added
+
+- "Data coverage clarifications" section in `schwab-marketdata-ops/SKILL.md`
+  and `schwab-marketdata-ops-en/SKILL.md` mirroring the companion MCP
+  README's clarifications.
+- `tool-reference-streaming.md` reference documenting the new
+  `get_streaming_snapshot` tool (in both Chinese and English mirrors).
+- `CONTRIBUTING.md` with skill authoring conventions and bilingual
+  mirror requirements.
+- `.github/ISSUE_TEMPLATE/` with bug_report / feature_request templates
+  for skill-specific issues (playbook failure, frontmatter bugs,
+  markdown rendering).
+- `.github/PULL_REQUEST_TEMPLATE.md`.
+- README license / i18n / skills / release badges.
+- `docs/RELEASE.md §9 Repository metadata` with `gh repo edit`
+  commands.
+
 ## [0.1.0] - 2026-05-23
 
 ### Added
@@ -39,5 +58,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential rotation runbook explicitly disallows force-pushing main (Git
   Safety Protocol).
 
-[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/kevinkda/schwab-marketdata-skill/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/kevinkda/schwab-marketdata-skill/releases/tag/v0.1.0
