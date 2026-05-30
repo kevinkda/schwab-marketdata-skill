@@ -1,0 +1,24 @@
+name: Markdownlint
+
+# V6-K: minimal markdownlint CI for this Markdown-only skill repo. It does not
+# consume the kevinkda/mcp-ci-templates reusable workflow (that is for the
+# Python MCP repos with ruff/mypy/pytest gates); a skill repo only needs the
+# markdownlint gate. The repo already ships .markdownlint-cli2.jsonc.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v23
+        with:
+          globs: '**/*.md'
