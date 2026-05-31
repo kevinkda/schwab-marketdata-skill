@@ -22,3 +22,10 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v23
         with:
           globs: '**/*.md'
+
+  structure-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate skill structure
+        run: bash scripts/validate-structure.sh

@@ -1,6 +1,6 @@
 # Tool reference — index
 
-> All 12 outward-facing tools are `async`.  All inputs are validated by
+> All 13 outward-facing tools are `async`.  All inputs are validated by
 > Pydantic before any network call.  All outputs are JSON dicts.  Errors
 > are returned **as dicts** (`{"error": "Schwab…Error", …}`) — they are
 > *not* raised back through the MCP protocol.
@@ -16,6 +16,7 @@ Split by tool family for easy scenario-based lookup:
 | Movers | [`tool-reference-movers.md`](tool-reference-movers.md) | `get_movers` | Today's top movers |
 | Instruments | [`tool-reference-instruments.md`](tool-reference-instruments.md) | `search_instruments` / `get_instrument_by_cusip` | Fuzzy lookup or exact CUSIP lookup |
 | Meta | [`tool-reference-meta.md`](tool-reference-meta.md) | `health_check` / `get_server_info` | Health probe and version handshake |
+| Streaming 🧪 | [`tool-reference-streaming.md`](tool-reference-streaming.md) | `get_streaming_snapshot` | Near-real-time bid/ask/last or 1-minute candles (experimental) |
 
 ## Cross-tool conventions
 
